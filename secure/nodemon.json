@@ -1,0 +1,8 @@
+{
+  "watch": ["backend", "scanners", "workers", "sockets", "reports"],
+  "ext": "ts,json",
+  "ignore": ["logs/*", "reports_output/*", "dist/*"],
+  "execMap": {
+    "ts": "ts-node"
+  }
+}
