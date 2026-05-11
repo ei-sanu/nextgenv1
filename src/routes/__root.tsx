@@ -9,6 +9,9 @@ import {
 } from "@tanstack/react-router";
 
 import appCss from "../styles.css?url";
+import { MotionProvider } from "@/components/interactive/MotionProvider";
+import { CursorSystem } from "@/components/interactive/CursorSystem";
+import { DistortionCanvas } from "@/components/interactive/DistortionCanvas";
 
 function NotFoundComponent() {
   return (
@@ -72,14 +75,9 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Lovable App" },
-      { name: "description", content: "Lovable Generated Project" },
-      { name: "author", content: "Lovable" },
-      { property: "og:title", content: "Lovable App" },
-      { property: "og:description", content: "Lovable Generated Project" },
-      { property: "og:type", content: "website" },
-      { name: "twitter:card", content: "summary" },
-      { name: "twitter:site", content: "@Lovable" },
+      { title: "NextGen Security" },
+      { name: "description", content: "Advanced Cyber Security System" },
+      { name: "author", content: "Team NextGen" },
     ],
     links: [
       {
@@ -101,7 +99,11 @@ function RootShell({ children }: { children: React.ReactNode }) {
         <HeadContent />
       </head>
       <body>
-        {children}
+        <MotionProvider>
+          <CursorSystem />
+          <DistortionCanvas />
+          {children}
+        </MotionProvider>
         <Scripts />
       </body>
     </html>
@@ -117,3 +119,4 @@ function RootComponent() {
     </QueryClientProvider>
   );
 }
+

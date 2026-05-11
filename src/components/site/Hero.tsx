@@ -2,7 +2,7 @@ import { motion } from "framer-motion";
 import { Shield, ArrowRight } from "lucide-react";
 import frameArt from "@/assets/scene-temple.jpg";
 import chipArt from "@/assets/hero-garden.jpg";
-import { ScratchImage } from "./ScratchImage";
+import { GlassCard } from "../interactive/GlassCard";
 
 const nav = ["Platform", "Customers", "FAQ"];
 
@@ -39,7 +39,7 @@ export function Hero() {
         transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
         className="relative z-20 mx-auto flex max-w-7xl items-center justify-between px-6 pt-7 sm:px-10"
       >
-        <a className="flex items-center gap-2 text-white">
+        <a className="flex items-center gap-2 text-white" data-magnetic="true">
           <Shield className="h-4 w-4 text-cyber" />
           <span className="font-display text-[15px] font-semibold tracking-[0.18em]">
             AEGIS
@@ -52,13 +52,14 @@ export function Hero() {
               key={l}
               href="#"
               className="text-[13px] text-white/70 hover:text-white transition"
+              data-magnetic="true"
             >
               {l}
             </a>
           ))}
         </nav>
 
-        <button className="rounded-full bg-white/95 px-5 py-2 text-[13px] font-medium text-neutral-900 hover:bg-white transition">
+        <button className="rounded-full bg-white/95 px-5 py-2 text-[13px] font-medium text-neutral-900 hover:bg-white transition" data-magnetic="true">
           Login
         </button>
       </motion.header>
@@ -101,6 +102,7 @@ export function Hero() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.55 }}
           className="group mt-9 inline-flex items-center gap-2 rounded-full bg-white px-6 py-3 text-[13.5px] font-medium text-neutral-900 shadow-[0_18px_50px_-12px_rgba(120,220,220,0.35)] hover:bg-neutral-100 transition"
+          data-magnetic="true"
         >
           Start scanning
           <ArrowRight className="h-3.5 w-3.5 transition group-hover:translate-x-0.5" />
@@ -111,21 +113,31 @@ export function Hero() {
           initial={{ opacity: 0, y: 60, scale: 0.92 }}
           animate={{ opacity: 1, y: 0, scale: 1 }}
           transition={{ duration: 1.2, delay: 0.7, ease: [0.22, 1, 0.36, 1] }}
-          className="relative mt-16 w-full max-w-2xl"
+          className="relative mt-16 w-full max-w-4xl"
         >
           {/* Spotlight halo behind frame */}
           <div className="absolute -inset-x-20 -top-10 -bottom-10 -z-10 rounded-[40px] bg-[radial-gradient(ellipse_at_center,oklch(0.78_0.14_200/0.25),transparent_65%)] blur-2xl" />
 
-          <ArtFrame>
-            <ScratchImage 
-              src={frameArt}
-              alt="Aegis security console"
-              className="h-full w-full"
-              revealText="ANALYZING"
-            />
-            {/* Subtle scan line over the artwork */}
-            <div className="pointer-events-none absolute inset-0 animate-scan-line bg-gradient-to-b from-transparent via-cyber/10 to-transparent" />
-          </ArtFrame>
+          <div className="perspective-1000">
+            <GlassCard className="p-2 sm:p-2">
+              <div className="relative overflow-hidden rounded-xl aspect-[16/9] w-full bg-black">
+                <img
+                  src={frameArt}
+                  alt="Aegis security console"
+                  className="block h-full w-full object-cover opacity-80"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent mix-blend-multiply" />
+                <div className="absolute inset-0 shadow-[inset_0_0_0_1px_rgba(255,255,255,0.1)] rounded-xl" />
+                {/* HUD Elements */}
+                <div className="absolute bottom-6 left-6 flex flex-col gap-2">
+                  <div className="font-mono text-xs text-cyber tracking-widest">SYSTEM.ONLINE</div>
+                  <div className="h-1 w-24 bg-white/10 rounded-full overflow-hidden">
+                    <div className="h-full bg-cyber w-2/3 shadow-[0_0_10px_oklch(0.78_0.14_200)]" />
+                  </div>
+                </div>
+              </div>
+            </GlassCard>
+          </div>
 
           {/* Floor reflection */}
           <div
@@ -139,24 +151,5 @@ export function Hero() {
         </motion.div>
       </div>
     </section>
-  );
-}
-
-function ArtFrame({ children }: { children: React.ReactNode }) {
-  return (
-    <div
-      className="relative rounded-[14px] p-[14px] shadow-[0_40px_100px_-20px_rgba(0,0,0,0.8),inset_0_1px_0_rgba(255,255,255,0.15)]"
-      style={{
-        background:
-          "linear-gradient(135deg, oklch(0.72 0.12 75) 0%, oklch(0.55 0.1 65) 30%, oklch(0.78 0.14 80) 50%, oklch(0.5 0.09 60) 75%, oklch(0.7 0.12 70) 100%)",
-      }}
-    >
-      {/* Inner bevel */}
-      <div className="relative overflow-hidden rounded-[4px] ring-1 ring-black/40 shadow-[inset_0_0_0_2px_rgba(0,0,0,0.4),inset_0_0_0_3px_rgba(255,220,150,0.2)]">
-        <div className="aspect-[16/10] w-full">{children}</div>
-      </div>
-      {/* Frame highlights */}
-      <div className="pointer-events-none absolute inset-0 rounded-[14px] ring-1 ring-white/20" />
-    </div>
   );
 }

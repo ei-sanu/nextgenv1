@@ -1,6 +1,5 @@
 import { motion, useScroll, useTransform } from "framer-motion";
 import { useRef, type ReactNode } from "react";
-import { ScratchImage } from "./ScratchImage";
 
 type Props = {
   index: string;
@@ -34,10 +33,10 @@ export function StoryChapter({
     <section ref={ref} className="relative px-3 sm:px-5 py-6">
       <div className="relative mx-auto w-full max-w-[1480px] overflow-hidden rounded-[28px] sm:rounded-[36px] bg-black">
         <motion.div style={{ y, scale }} className="absolute inset-0 h-[115%] w-full">
-            <ScratchImage 
+             <img
                 src={image} 
-                className="h-full w-full"
-                revealText="DECRYPTED"
+                alt=""
+                className="h-full w-full object-cover"
             />
         </motion.div>
         <div className="absolute inset-0 bg-[radial-gradient(120%_80%_at_50%_0%,transparent_20%,rgba(0,0,0,0.6)_85%)] pointer-events-none" />
@@ -57,10 +56,10 @@ export function StoryChapter({
               <span className="h-px w-8 bg-cyber/60" />
               <span>{eyebrow}</span>
             </div>
-            <h2 className="font-display text-[clamp(2rem,5.2vw,4.5rem)] font-semibold leading-[0.98] tracking-[-0.035em] text-white drop-shadow-[0_4px_30px_rgba(0,0,0,0.6)]">
+            <h2 className="font-display text-[clamp(2rem,5.2vw,4.5rem)] font-semibold leading-[0.98] tracking-[-0.035em] text-white drop-shadow-[0_4px_30px_rgba(0,0,0,0.6)]" data-magnetic="true">
               {title}
             </h2>
-            <p className="max-w-md text-[14.5px] leading-relaxed text-white/75">
+            <p className="max-w-md text-[14.5px] leading-relaxed text-white/75" data-magnetic="true">
               {body}
             </p>
             {children}
