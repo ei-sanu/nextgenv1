@@ -72,12 +72,13 @@ app.use((err: any, req: Request, res: Response, next: NextFunction) => {
 setupSocketIO(server);
 
 const PORT = process.env.PORT || 5001;
+const HOST = '127.0.0.1';
 
 const startServer = async () => {
   try {
     await connectDB();
-    server.listen(PORT, () => {
-      logger.info(`[Server] Unified Security Backend running on port ${PORT}`);
+    server.listen(Number(PORT), HOST, () => {
+      logger.info(`[Server] Sentinel Security API active at http://${HOST}:${PORT}`);
     });
   } catch (error) {
     logger.error('Failed to start server:', error);

@@ -1,8 +1,21 @@
 import axios from "axios";
 
+// Helper to determine the backend base URL
+const getBaseURL = () => {
+  if (typeof window === "undefined") return "/api";
+  
+  const { hostname } = window.location;
+  // If we're on localhost, hit the backend directly (port 5001) to bypass proxy flakiness
+  if (hostname === "localhost" || hostname === "127.0.0.1") {
+    return "http://127.0.0.1:5001/api";
+  }
+  
+  return "/api";
+};
+
 const api = axios.create({
-  baseURL: "/api",
-  withCredentials: true,
+  baseURL: getBaseURL(),
+  withCredentials: true, // Required for secure cookies
 });
 
 // Request interceptor to add the access token
@@ -23,13 +36,11 @@ api.interceptors.response.use(
   async (error) => {
     const originalRequest = error.config;
 
-    // Check if the response is HTML (likely a 404/500 from the dev server)
+    // Check if the response is HTML (indicates proxy/server mismatch)
     const contentType = error.response?.headers?.["content-type"];
     if (contentType && contentType.includes("text/html")) {
-        const htmlSnippet = typeof error.response.data === 'string' ? error.response.data.substring(0, 300) : '[Binary/Object]';
         console.error("API Connection Error: Received HTML instead of JSON. Ensure the backend server is running on port 5001.");
-        console.error("HTML Snippet (first 300 chars):", htmlSnippet);
-        return Promise.reject(new Error("Internal Server Error (Received HTML from Proxy)"));
+        return Promise.reject(new Error("Internal Server Error (HTML Response)"));
     }
 
     // If 401 and not already retrying
@@ -37,7 +48,7 @@ api.interceptors.response.use(
       originalRequest._retry = true;
 
       try {
-        const res = await axios.post("/api/auth/refresh-token", {}, { withCredentials: true });
+        const res = await axios.post(`${getBaseURL()}/auth/refresh-token`, {}, { withCredentials: true });
         const { accessToken } = res.data;
 
         localStorage.setItem("accessToken", accessToken);

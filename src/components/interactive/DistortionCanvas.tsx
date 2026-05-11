@@ -39,7 +39,7 @@ function Scene() {
       targetVelocity.current *= 0.95;
 
       // Use the clock provided by R3F state
-      materialRef.current.uTime = state.clock.getElapsedTime();
+      materialRef.current.uTime = state.clock.elapsedTime;
       materialRef.current.uMouse = mouse.current;
       materialRef.current.uPrevMouse = prevMouse.current;
       materialRef.current.uVelocity = velocity.current;
