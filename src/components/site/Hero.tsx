@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
 import { Shield, ArrowRight, Zap, Lock } from "lucide-react";
+import vaultArt from "@/assets/scene-vault.jpg";
 import neonArt from "@/assets/neon.jpg";
 import chipArt from "@/assets/hero-garden.jpg";
 import { GlassCard } from "../interactive/GlassCard";
@@ -93,36 +94,53 @@ export function Hero() {
             </span>
         </motion.div>
 
-        <motion.h1
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1, delay: 0.3, ease: [0.22, 1, 0.36, 1] }}
-          className="font-display max-w-5xl text-white text-[clamp(2.5rem,8vw,7.5rem)] font-bold leading-[0.95] tracking-[-0.04em]"
-        >
-          Absolute security,
-          <br />
-          for the{" "}
-          <span className="relative inline-flex h-[0.82em] w-[1.6em] -mb-[0.05em] overflow-hidden rounded-xl ring-1 ring-white/10 align-baseline shadow-[0_20px_40px_-10px_rgba(0,0,0,0.8)]">
-            <img
-              src={chipArt}
-              alt=""
-              className="h-full w-full object-cover scale-110"
-              aria-hidden
-            />
-            <div className="absolute inset-0 bg-gradient-to-tr from-cyber/20 via-transparent to-white/10" />
-          </span>{" "}
-          NextGen.
-        </motion.h1>
+        {/* Heading with Neon Background */}
+        <div className="relative group">
+            {/* The Neon Background Image for the Text */}
+            <motion.div 
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 0.4, scale: 1 }}
+                transition={{ duration: 1.5, delay: 0.2 }}
+                className="absolute inset-x-0 top-1/2 -translate-y-1/2 -z-10 h-[150%] w-full pointer-events-none blur-3xl"
+            >
+                <img 
+                    src={neonArt} 
+                    alt="" 
+                    className="h-full w-full object-cover rounded-[100%] opacity-60"
+                />
+            </motion.div>
 
-        <motion.p
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.6 }}
-          className="mt-8 max-w-xl text-[16px] leading-relaxed text-white/50"
-        >
-          Deploying autonomous AI sentinels to guard your digital vaults. 
-          Real-time malware suppression and predictive network shielding across the global grid.
-        </motion.p>
+            <motion.h1
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 1, delay: 0.3, ease: [0.22, 1, 0.36, 1] }}
+            className="font-display max-w-5xl text-white text-[clamp(2.5rem,8vw,7.5rem)] font-bold leading-[0.95] tracking-[-0.04em]"
+            >
+            Absolute security,
+            <br />
+            for the{" "}
+            <span className="relative inline-flex h-[0.82em] w-[1.6em] -mb-[0.05em] overflow-hidden rounded-xl ring-1 ring-white/10 align-baseline shadow-[0_20px_40px_-10px_rgba(0,0,0,0.8)]">
+                <img
+                src={chipArt}
+                alt=""
+                className="h-full w-full object-cover scale-110"
+                aria-hidden
+                />
+                <div className="absolute inset-0 bg-gradient-to-tr from-cyber/20 via-transparent to-white/10" />
+            </span>{" "}
+            NextGen.
+            </motion.h1>
+
+            <motion.p
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.6 }}
+            className="mt-8 max-w-xl mx-auto text-[16px] leading-relaxed text-white/50"
+            >
+            Deploying autonomous AI sentinels to guard your digital vaults. 
+            Real-time malware suppression and predictive network shielding across the global grid.
+            </motion.p>
+        </div>
 
         <motion.div 
             initial={{ opacity: 0, y: 20 }}
@@ -160,7 +178,7 @@ export function Hero() {
             <GlassCard className="p-3 sm:p-4 bg-black/60">
               <div className="relative overflow-hidden rounded-2xl aspect-[16/9] w-full bg-neutral-900 shadow-inner">
                 <img
-                  src={neonArt}
+                  src={vaultArt}
                   alt="Sentinel Command Center"
                   className="block h-full w-full object-cover opacity-90 transition-transform duration-[3s] hover:scale-105"
                 />
