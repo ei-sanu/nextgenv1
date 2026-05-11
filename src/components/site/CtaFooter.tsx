@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
 import { ArrowUpRight, Shield, Globe, Lock } from "lucide-react";
+import { Link } from "@tanstack/react-router";
 
 export function CtaFooter() {
   return (
@@ -49,16 +50,16 @@ export function CtaFooter() {
         <footer className="mt-48 flex flex-col items-center justify-between gap-8 border-t border-white/5 pt-12 text-[11px] font-bold uppercase tracking-[0.2em] text-white/30 md:flex-row">
           <div className="flex items-center gap-3">
             <Shield className="h-4 w-4 text-cyber" />
-            <span className="font-display tracking-[0.3em] text-white">
+            <Link to="/" className="font-display tracking-[0.3em] text-white" data-magnetic="true">
               SENTINEL
-            </span>
+            </Link>
             <span className="ml-4 border-l border-white/10 pl-4 lowercase font-normal italic tracking-normal text-white/20">© 2026 — absolute security for the global grid.</span>
           </div>
           <div className="flex gap-8">
-            <a href="#" className="hover:text-cyber transition-colors" data-magnetic="true">Privacy</a>
-            <a href="#" className="hover:text-cyber transition-colors" data-magnetic="true">Network</a>
-            <a href="#" className="hover:text-cyber transition-colors" data-magnetic="true">Status</a>
-            <a href="#" className="hover:text-cyber transition-colors" data-magnetic="true">Audit</a>
+            <Link to="/privacy" className="hover:text-cyber transition-colors" data-magnetic="true">Privacy</Link>
+            <Link to="/network" className="hover:text-cyber transition-colors" data-magnetic="true">Network</Link>
+            <Link to="/status" className="hover:text-cyber transition-colors" data-magnetic="true">Status</Link>
+            <Link to="/audit" className="hover:text-cyber transition-colors" data-magnetic="true">Audit</Link>
           </div>
         </footer>
       </div>

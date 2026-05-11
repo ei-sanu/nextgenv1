@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import Scan from '../models/Scan';
 import Vulnerability from '../models/Vulnerability';
+import Log from '../models/Log';
 import { addScanToQueue } from '../../workers/queue';
 import Joi from 'joi';
 
@@ -64,7 +65,18 @@ export const getVulnerabilities = async (req: Request, res: Response) => {
   try {
     const vulns = await Vulnerability.find({ scanId: req.params.id });
     return res.status(200).json({ success: true, data: vulns });
-  } catch (err: any) {
-    return res.status(500).json({ success: false, message: err.message });
+  } catch (err: unknown) {
+    const message = err instanceof Error ? err.message : String(err);
+    return res.status(500).json({ success: false, message });
+  }
+};
+
+export const getScanLogs = async (req: Request, res: Response) => {
+  try {
+    const logs = await Log.find({ 'meta.scanId': req.params.id }).sort({ timestamp: 1 }).limit(1000);
+    return res.status(200).json({ success: true, data: logs });
+  } catch (err: unknown) {
+    const message = err instanceof Error ? err.message : String(err);
+    return res.status(500).json({ success: false, message });
   }
 };

@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { startScan, getScans, getScanById, getVulnerabilities } from '../controllers/scanController';
+import { startScan, getScans, getScanById, getVulnerabilities, getScanLogs } from '../controllers/scanController';
 
 const router = Router();
 
@@ -14,5 +14,6 @@ router.get('/:id', getScanById);
 
 // Route to get vulnerabilities for a specific scan
 router.get('/:id/vulnerabilities', getVulnerabilities);
+router.get('/:id/logs', getScanLogs);
 
 export default router;

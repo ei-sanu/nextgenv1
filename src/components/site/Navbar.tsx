@@ -1,89 +1,115 @@
+"use client";
+
 import { Link } from "@tanstack/react-router";
-import { motion } from "framer-motion";
-import { Shield, Menu, X } from "lucide-react";
-import { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Shield, Menu, X, Activity, Globe, Lock, FileSearch } from "lucide-react";
+import { useState, useEffect } from "react";
 
 const links = [
-  { label: "Platform", href: "/" },
-  { label: "Web Scan", href: "/" },
-  { label: "Network", href: "/" },
-  { label: "Threat Intel", href: "/" },
-  { label: "Pricing", href: "/" },
+  { label: "Privacy", href: "/privacy", icon: Lock },
+  { label: "Network", href: "/network", icon: Globe },
+  { label: "Status", href: "/status", icon: Activity },
+  { label: "Audit", href: "/audit", icon: FileSearch },
 ];
 
 export function Navbar() {
   const [open, setOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => setScrolled(window.scrollY > 20);
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   return (
     <motion.header
-      initial={{ y: -24, opacity: 0 }}
+      initial={{ y: -100, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
-      transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-      className="fixed inset-x-0 top-4 z-50 flex justify-center px-4"
+      transition={{ duration: 1, ease: [0.22, 1, 0.36, 1] }}
+      className="fixed inset-x-0 top-0 z-[100] flex justify-center px-6 py-8 pointer-events-none"
     >
-      <nav className="glass-strong w-full max-w-6xl rounded-full px-4 py-2.5 shadow-[0_20px_60px_-20px_rgba(0,0,0,0.8)]">
-        <div className="flex items-center justify-between gap-6">
-          <Link to="/" className="flex items-center gap-2.5 pl-2">
+      <nav className={`
+        pointer-events-auto w-full max-w-5xl rounded-[32px] px-6 py-3 transition-all duration-500
+        ${scrolled 
+          ? "bg-black/40 backdrop-blur-2xl border border-white/10 shadow-[0_20px_50px_-20px_rgba(0,0,0,0.5)]" 
+          : "bg-transparent border border-transparent"}
+      `}>
+        <div className="flex items-center justify-between gap-10">
+          <Link to="/" className="flex items-center gap-3 group" data-magnetic="true">
             <div className="relative">
-              <div className="absolute inset-0 blur-md bg-cyber/60 rounded-full" />
-              <Shield className="relative h-5 w-5 text-cyber" strokeWidth={2.2} />
+              <div className="absolute inset-0 blur-lg bg-cyber/40 rounded-full group-hover:bg-cyber/60 transition-colors" />
+              <Shield className="relative h-6 w-6 text-cyber transition-transform group-hover:scale-110" strokeWidth={2.5} />
             </div>
-            <span className="font-display text-[15px] font-semibold tracking-tight">
-              AEGIS<span className="text-cyber">.</span>
+            <span className="font-display text-[18px] font-bold tracking-[0.2em] text-white">
+              SENTINEL
             </span>
           </Link>
 
-          <ul className="hidden md:flex items-center gap-1 text-[13px] text-muted-foreground">
+          <ul className="hidden md:flex items-center gap-2">
             {links.map((l) => (
               <li key={l.label}>
-                <a
-                  href={l.href}
-                  className="px-3 py-2 rounded-full transition-colors hover:text-foreground hover:bg-white/5"
+                <Link
+                  to={l.href}
+                  className="group relative flex items-center gap-2 px-5 py-2.5 rounded-full text-[11px] font-bold uppercase tracking-[0.2em] text-white/40 transition-all hover:text-white hover:bg-white/5"
+                  data-magnetic="true"
+                  activeProps={{ className: "!text-cyber !bg-cyber/5 !border-cyber/20" }}
                 >
+                  <l.icon className="h-3.5 w-3.5 opacity-0 -ml-2 group-hover:opacity-100 group-hover:ml-0 transition-all duration-300" />
                   {l.label}
-                </a>
+                  <motion.span 
+                    layoutId="nav-hover"
+                    className="absolute inset-0 rounded-full border border-white/10 opacity-0 group-hover:opacity-100" 
+                  />
+                </Link>
               </li>
             ))}
           </ul>
 
-          <div className="hidden md:flex items-center gap-2">
-            <button className="text-[13px] text-muted-foreground hover:text-foreground px-3 py-2 transition">
-              Sign in
+          <div className="hidden md:flex items-center gap-4">
+            <button className="text-[11px] font-bold uppercase tracking-[0.2em] text-white/30 hover:text-white transition" data-magnetic="true">
+              Sign In
             </button>
-            <button className="relative text-[13px] font-medium px-4 py-2 rounded-full bg-foreground text-background hover:opacity-90 transition">
-              Launch console
+            <button className="relative group px-6 py-2.5 rounded-full bg-white text-black text-[11px] font-bold uppercase tracking-[0.2em] transition-transform hover:scale-105 active:scale-95" data-magnetic="true">
+              <span className="relative z-10">Console</span>
+              <div className="absolute inset-0 rounded-full bg-cyber/20 blur-md opacity-0 group-hover:opacity-100 transition-opacity" />
             </button>
           </div>
 
           <button
-            className="md:hidden p-2 text-foreground"
+            className="md:hidden p-2 text-white"
             onClick={() => setOpen((v) => !v)}
             aria-label="menu"
           >
-            {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+            {open ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
           </button>
         </div>
 
-        {open && (
-          <motion.div
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="md:hidden mt-3 flex flex-col gap-1 pb-2"
-          >
-            {links.map((l) => (
-              <a
-                key={l.label}
-                href={l.href}
-                className="px-4 py-2.5 rounded-xl text-sm text-muted-foreground hover:text-foreground hover:bg-white/5"
-              >
-                {l.label}
-              </a>
-            ))}
-            <button className="mt-2 text-sm font-medium px-4 py-2.5 rounded-xl bg-foreground text-background">
-              Launch console
-            </button>
-          </motion.div>
-        )}
+        <AnimatePresence>
+          {open && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: "auto" }}
+              exit={{ opacity: 0, height: 0 }}
+              className="md:hidden mt-6 flex flex-col gap-2 pb-4 overflow-hidden"
+            >
+              {links.map((l) => (
+                <Link
+                  key={l.label}
+                  to={l.href}
+                  onClick={() => setOpen(false)}
+                  className="flex items-center gap-4 px-6 py-4 rounded-2xl text-sm font-bold uppercase tracking-[0.2em] text-white/50 hover:text-white hover:bg-white/5 transition-colors"
+                >
+                  <l.icon className="h-4 w-4 text-cyber" />
+                  {l.label}
+                </Link>
+              ))}
+              <button className="mt-4 w-full py-4 rounded-2xl bg-white text-black font-bold uppercase tracking-[0.2em] text-sm">
+                Launch Console
+              </button>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </nav>
     </motion.header>
   );

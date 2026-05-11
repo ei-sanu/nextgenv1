@@ -9,11 +9,35 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as StatusRouteImport } from './routes/status'
+import { Route as PrivacyRouteImport } from './routes/privacy'
+import { Route as NetworkRouteImport } from './routes/network'
+import { Route as AuditRouteImport } from './routes/audit'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as DashboardIndexRouteImport } from './routes/dashboard/index'
 import { Route as DashboardNewScanIndexRouteImport } from './routes/dashboard/new-scan/index'
 import { Route as DashboardScanIdRouteImport } from './routes/dashboard/scan/$id'
 
+const StatusRoute = StatusRouteImport.update({
+  id: '/status',
+  path: '/status',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PrivacyRoute = PrivacyRouteImport.update({
+  id: '/privacy',
+  path: '/privacy',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const NetworkRoute = NetworkRouteImport.update({
+  id: '/network',
+  path: '/network',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuditRoute = AuditRouteImport.update({
+  id: '/audit',
+  path: '/audit',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -37,12 +61,20 @@ const DashboardScanIdRoute = DashboardScanIdRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/audit': typeof AuditRoute
+  '/network': typeof NetworkRoute
+  '/privacy': typeof PrivacyRoute
+  '/status': typeof StatusRoute
   '/dashboard/': typeof DashboardIndexRoute
   '/dashboard/scan/$id': typeof DashboardScanIdRoute
   '/dashboard/new-scan/': typeof DashboardNewScanIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/audit': typeof AuditRoute
+  '/network': typeof NetworkRoute
+  '/privacy': typeof PrivacyRoute
+  '/status': typeof StatusRoute
   '/dashboard': typeof DashboardIndexRoute
   '/dashboard/scan/$id': typeof DashboardScanIdRoute
   '/dashboard/new-scan': typeof DashboardNewScanIndexRoute
@@ -50,6 +82,10 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/audit': typeof AuditRoute
+  '/network': typeof NetworkRoute
+  '/privacy': typeof PrivacyRoute
+  '/status': typeof StatusRoute
   '/dashboard/': typeof DashboardIndexRoute
   '/dashboard/scan/$id': typeof DashboardScanIdRoute
   '/dashboard/new-scan/': typeof DashboardNewScanIndexRoute
@@ -58,14 +94,30 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/audit'
+    | '/network'
+    | '/privacy'
+    | '/status'
     | '/dashboard/'
     | '/dashboard/scan/$id'
     | '/dashboard/new-scan/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/dashboard' | '/dashboard/scan/$id' | '/dashboard/new-scan'
+  to:
+    | '/'
+    | '/audit'
+    | '/network'
+    | '/privacy'
+    | '/status'
+    | '/dashboard'
+    | '/dashboard/scan/$id'
+    | '/dashboard/new-scan'
   id:
     | '__root__'
     | '/'
+    | '/audit'
+    | '/network'
+    | '/privacy'
+    | '/status'
     | '/dashboard/'
     | '/dashboard/scan/$id'
     | '/dashboard/new-scan/'
@@ -73,6 +125,10 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AuditRoute: typeof AuditRoute
+  NetworkRoute: typeof NetworkRoute
+  PrivacyRoute: typeof PrivacyRoute
+  StatusRoute: typeof StatusRoute
   DashboardIndexRoute: typeof DashboardIndexRoute
   DashboardScanIdRoute: typeof DashboardScanIdRoute
   DashboardNewScanIndexRoute: typeof DashboardNewScanIndexRoute
@@ -80,6 +136,34 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/status': {
+      id: '/status'
+      path: '/status'
+      fullPath: '/status'
+      preLoaderRoute: typeof StatusRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/privacy': {
+      id: '/privacy'
+      path: '/privacy'
+      fullPath: '/privacy'
+      preLoaderRoute: typeof PrivacyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/network': {
+      id: '/network'
+      path: '/network'
+      fullPath: '/network'
+      preLoaderRoute: typeof NetworkRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/audit': {
+      id: '/audit'
+      path: '/audit'
+      fullPath: '/audit'
+      preLoaderRoute: typeof AuditRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -113,6 +197,10 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AuditRoute: AuditRoute,
+  NetworkRoute: NetworkRoute,
+  PrivacyRoute: PrivacyRoute,
+  StatusRoute: StatusRoute,
   DashboardIndexRoute: DashboardIndexRoute,
   DashboardScanIdRoute: DashboardScanIdRoute,
   DashboardNewScanIndexRoute: DashboardNewScanIndexRoute,

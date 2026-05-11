@@ -12,6 +12,7 @@ import appCss from "../styles.css?url";
 import { MotionProvider } from "@/components/interactive/MotionProvider";
 import { CursorSystem } from "@/components/interactive/CursorSystem";
 import { DistortionCanvas } from "@/components/interactive/DistortionCanvas";
+import { GlobalLoaderProvider } from "@/components/interactive/GlobalLoader";
 
 function NotFoundComponent() {
   return (
@@ -75,7 +76,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "NextGen Security" },
+      { title: "SENTINEL — Absolute Security" },
       { name: "description", content: "Advanced Cyber Security System" },
       { name: "author", content: "Team NextGen" },
     ],
@@ -100,9 +101,11 @@ function RootShell({ children }: { children: React.ReactNode }) {
       </head>
       <body>
         <MotionProvider>
-          <CursorSystem />
-          <DistortionCanvas />
-          {children}
+          <GlobalLoaderProvider>
+            <CursorSystem />
+            <DistortionCanvas />
+            {children}
+          </GlobalLoaderProvider>
         </MotionProvider>
         <Scripts />
       </body>
@@ -119,4 +122,3 @@ function RootComponent() {
     </QueryClientProvider>
   );
 }
-
