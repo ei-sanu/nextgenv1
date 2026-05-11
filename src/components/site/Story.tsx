@@ -1,5 +1,5 @@
 import { StoryChapter } from "../interactive/StoryChapter";
-import temple from "@/assets/scene-temple.jpg";
+import ap from "@/assets/ap.jpg";
 import sentinel from "@/assets/scene-sentinel.jpg";
 import vault from "@/assets/scene-vault.jpg";
 
@@ -10,7 +10,7 @@ export function Story() {
         index="01"
         eyebrow="The watchtower"
         align="left"
-        image={temple}
+        image={ap}
         title={
           <>
             Stand above<br />the storm.
