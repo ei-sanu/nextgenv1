@@ -4,6 +4,23 @@ import { parseStringPromise } from 'xml2js';
 import { exec } from 'child_process';
 import net from 'net';
 
+const getErrorMessage = (error: unknown): string => {
+  if (error instanceof Error) return error.message;
+  return String(error);
+};
+
+const normalizeTargetHost = (target: string): string => {
+  const trimmed = target.trim();
+  const candidate = /^https?:\/\//i.test(trimmed) ? new URL(trimmed).hostname : trimmed.split(/[\/\:]/)[0];
+  const host = candidate.trim();
+
+  // Keep host input strict before passing to shell command execution.
+  if (!/^[a-zA-Z0-9.-]+$/.test(host)) {
+    throw new Error(`Invalid target host: ${target}`);
+  }
+  return host;
+};
+
 const isCommandAvailable = (cmd: string): Promise<boolean> => {
   return new Promise((resolve) => {
     exec(`command -v ${cmd}`, (err, stdout) => {
@@ -16,7 +33,7 @@ const isCommandAvailable = (cmd: string): Promise<boolean> => {
 const basicPortScan = async (target: string) => {
   const commonPorts = [21, 22, 23, 80, 443, 3389];
   const vulnerabilities: any[] = [];
-  const host = target.replace(/^https?:\/\//i, '').split(/[\/\:]/)[0];
+  const host = normalizeTargetHost(target);
 
   const checkPort = (port: number) => {
     return new Promise<boolean>((resolve) => {
@@ -54,8 +71,8 @@ const basicPortScan = async (target: string) => {
           remediation: 'Restrict access or disable unnecessary services.'
         });
       }
-    } catch (e) {
-      logger.warn(`Port check failed for ${host}:${port} - ${e?.message || e}`);
+    } catch (error: unknown) {
+      logger.warn(`Port check failed for ${host}:${port} - ${getErrorMessage(error)}`);
     }
   }
 
@@ -63,14 +80,15 @@ const basicPortScan = async (target: string) => {
 };
 
 export const runNmapScan = async (target: string): Promise<any[]> => {
+  const host = normalizeTargetHost(target);
   const available = await isCommandAvailable('nmap');
   if (!available) {
-    logger.warn(`Nmap binary not found in PATH; falling back to basic TCP port checks for ${target}`);
-    return await basicPortScan(target);
+    logger.warn(`Nmap binary not found in PATH; falling back to basic TCP port checks for ${host}`);
+    return await basicPortScan(host);
   }
 
   try {
-    const command = `nmap -sV -sC -oX - ${target}`;
+    const command = `nmap -sV -sC -oX - ${host}`;
     const { stdout } = await execCommand(command);
 
     const result = await parseStringPromise(stdout);
@@ -120,10 +138,10 @@ export const runNmapScan = async (target: string): Promise<any[]> => {
       }
     }
     return vulnerabilities;
-  } catch (error: any) {
-    logger.error(`Nmap scan failed for ${target}: ${error.message}`);
+  } catch (error: unknown) {
+    logger.error(`Nmap scan failed for ${host}: ${getErrorMessage(error)}`);
     // fallback to basic scan
-    const fallback = await basicPortScan(target);
+    const fallback = await basicPortScan(host);
     if (fallback.length) return fallback;
     throw new Error('Nmap scan execution failed');
   }

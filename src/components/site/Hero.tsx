@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
-import { Shield, ArrowRight, Zap, Lock, Globe } from "lucide-react";
-import frameArt from "@/assets/scene-vault.jpg";
+import { Shield, ArrowRight, Zap, Lock } from "lucide-react";
+import neonArt from "@/assets/neon.jpg";
 import chipArt from "@/assets/hero-garden.jpg";
 import { GlassCard } from "../interactive/GlassCard";
 
@@ -160,7 +160,7 @@ export function Hero() {
             <GlassCard className="p-3 sm:p-4 bg-black/60">
               <div className="relative overflow-hidden rounded-2xl aspect-[16/9] w-full bg-neutral-900 shadow-inner">
                 <img
-                  src={frameArt}
+                  src={neonArt}
                   alt="Sentinel Command Center"
                   className="block h-full w-full object-cover opacity-90 transition-transform duration-[3s] hover:scale-105"
                 />
@@ -168,16 +168,6 @@ export function Hero() {
                 {/* HUD Overlays */}
                 <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-transparent to-black/40" />
                 
-                <div className="absolute top-8 left-8 flex items-center gap-4">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-lg border border-white/10 bg-black/40 backdrop-blur-xl">
-                        <Globe className="h-5 w-5 text-cyber animate-pulse" />
-                    </div>
-                    <div>
-                        <div className="font-mono text-[10px] text-white/40 uppercase tracking-widest">Global Status</div>
-                        <div className="font-display text-sm font-bold text-white tracking-wide">OPERATIONAL [99.9%]</div>
-                    </div>
-                </div>
-
                 <div className="absolute top-8 right-8">
                     <div className="flex items-center gap-2 rounded-md border border-red-500/30 bg-red-500/10 px-3 py-1.5 backdrop-blur-md">
                         <Zap className="h-3 w-3 text-red-500" />
