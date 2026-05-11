@@ -3,41 +3,14 @@ import { Shield, ArrowRight, Zap, Lock } from "lucide-react";
 import neonArt from "@/assets/neon.jpg";
 import chipArt from "@/assets/hero-garden.jpg";
 
-const nav = ["Security", "Intelligence", "Network"];
-
 export function Hero() {
   return (
-    <section className="relative isolate overflow-hidden min-h-screen flex flex-col justify-center">
-      {/* Deep ambient backdrop */}
-      <div className="absolute inset-0 bg-[radial-gradient(120%_60%_at_50%_-10%,oklch(0.32_0.05_255)_0%,oklch(0.12_0.02_255)_55%,oklch(0.06_0.015_260)_100%)]" />
-
-      {/* Spotlight cone from top */}
-      <div
-        className="absolute left-1/2 top-0 -z-0 h-[140%] w-[70%] -translate-x-1/2"
-        style={{
-          background:
-            "radial-gradient(ellipse 60% 70% at 50% 0%, oklch(0.78 0.14 200 / 0.18) 0%, oklch(0.78 0.14 200 / 0.06) 35%, transparent 65%)",
-          filter: "blur(8px)",
-        }}
-      />
-      
-      {/* Floating particles background effect (CSS only) */}
-      <div className="absolute inset-0 pointer-events-none overflow-hidden">
-          {[...Array(6)].map((_, i) => (
-              <div 
-                key={i}
-                className="absolute h-px w-px bg-cyber shadow-[0_0_15px_oklch(0.78_0.14_200)] animate-pulse"
-                style={{
-                    top: `${(i * 137.5) % 100}%`,
-                    left: `${(i * 61.7) % 100}%`,
-                    animationDelay: `${i * 0.5}s`,
-                    opacity: 0.3
-                }}
-              />
-          ))}
-      </div>
-
-      <div className="absolute inset-0 noise opacity-20" />
+    <section className="relative isolate min-h-screen flex flex-col justify-center">
+      {/* 
+        Note: Ambient backgrounds, grids, and atmosphere are now 
+        unified in the global <Atmosphere /> component to ensure 
+        seamless cinematic blending across the entire site.
+      */}
 
       {/* Hero content */}
       <div className="relative z-10 mx-auto flex max-w-7xl flex-col items-center px-6 pb-20 pt-32 text-center">
