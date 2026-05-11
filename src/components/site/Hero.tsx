@@ -1,9 +1,7 @@
 import { motion } from "framer-motion";
 import { Shield, ArrowRight, Zap, Lock } from "lucide-react";
-import vaultArt from "@/assets/scene-vault.jpg";
 import neonArt from "@/assets/neon.jpg";
 import chipArt from "@/assets/hero-garden.jpg";
-import { GlassCard } from "../interactive/GlassCard";
 
 const nav = ["Security", "Intelligence", "Network"];
 
@@ -162,69 +160,6 @@ export function Hero() {
                 View Vaults
                 <Lock className="h-4 w-4 text-cyber/60" />
             </button>
-        </motion.div>
-
-        {/* Framed centerpiece */}
-        <motion.div
-          initial={{ opacity: 0, y: 80, scale: 0.95 }}
-          animate={{ opacity: 1, y: 0, scale: 1 }}
-          transition={{ duration: 1.4, delay: 0.9, ease: [0.22, 1, 0.36, 1] }}
-          className="relative mt-24 w-full max-w-5xl"
-        >
-          {/* Spotlight halo behind frame */}
-          <div className="absolute -inset-x-40 -top-20 -bottom-20 -z-10 rounded-[100px] bg-[radial-gradient(ellipse_at_center,oklch(0.78_0.14_200/0.15),transparent_70%)] blur-3xl" />
-
-          <div className="perspective-2000">
-            <GlassCard className="p-3 sm:p-4 bg-black/60">
-              <div className="relative overflow-hidden rounded-2xl aspect-[16/9] w-full bg-neutral-900 shadow-inner">
-                <img
-                  src={vaultArt}
-                  alt="Sentinel Command Center"
-                  className="block h-full w-full object-cover opacity-90 transition-transform duration-[3s] hover:scale-105"
-                />
-                
-                {/* HUD Overlays */}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-transparent to-black/40" />
-                
-                <div className="absolute top-8 right-8">
-                    <div className="flex items-center gap-2 rounded-md border border-red-500/30 bg-red-500/10 px-3 py-1.5 backdrop-blur-md">
-                        <Zap className="h-3 w-3 text-red-500" />
-                        <span className="font-mono text-[9px] font-bold text-red-500 uppercase tracking-tighter">
-                            Active Threats: 0
-                        </span>
-                    </div>
-                </div>
-
-                <div className="absolute bottom-8 left-8 right-8 flex items-end justify-between">
-                  <div className="flex flex-col gap-3">
-                    <div className="font-mono text-[10px] text-cyber tracking-[0.3em] uppercase">Security Level: Maximum</div>
-                    <div className="flex gap-1">
-                        {[...Array(12)].map((_, i) => (
-                            <div key={i} className={`h-1.5 w-6 rounded-full ${i < 8 ? 'bg-cyber shadow-[0_0_8px_oklch(0.78_0.14_200)]' : 'bg-white/10'}`} />
-                        ))}
-                    </div>
-                  </div>
-                  <div className="font-mono text-[10px] text-white/30 text-right">
-                    LATENCY: 4MS<br />
-                    UPTIME: 142D 06H
-                  </div>
-                </div>
-
-                {/* Scanline Effect */}
-                <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(0,0,0,0.1)_50%),linear-gradient(90deg,rgba(255,0,0,0.02),rgba(0,255,0,0.01),rgba(0,0,255,0.02))] bg-[length:100%_2px,3px_100%] opacity-20" />
-              </div>
-            </GlassCard>
-          </div>
-
-          {/* Floor reflection */}
-          <div
-            className="absolute left-1/2 top-full h-40 w-[90%] -translate-x-1/2 opacity-20"
-            style={{
-              background:
-                "radial-gradient(ellipse at top, oklch(0.78 0.14 200 / 0.3), transparent 75%)",
-              filter: "blur(30px)",
-            }}
-          />
         </motion.div>
       </div>
     </section>
