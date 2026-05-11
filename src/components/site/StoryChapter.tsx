@@ -1,5 +1,6 @@
 import { motion, useScroll, useTransform } from "framer-motion";
 import { useRef, type ReactNode } from "react";
+import { ScratchImage } from "./ScratchImage";
 
 type Props = {
   index: string;
@@ -32,22 +33,20 @@ export function StoryChapter({
   return (
     <section ref={ref} className="relative px-3 sm:px-5 py-6">
       <div className="relative mx-auto w-full max-w-[1480px] overflow-hidden rounded-[28px] sm:rounded-[36px] bg-black">
-        <motion.img
-          src={image}
-          alt=""
-          width={1920}
-          height={1280}
-          loading="lazy"
-          style={{ y, scale }}
-          className="absolute inset-0 h-[115%] w-full object-cover"
-        />
-        <div className="absolute inset-0 bg-[radial-gradient(120%_80%_at_50%_0%,transparent_20%,rgba(0,0,0,0.6)_85%)]" />
-        <div className="absolute inset-0 noise" />
+        <motion.div style={{ y, scale }} className="absolute inset-0 h-[115%] w-full">
+            <ScratchImage 
+                src={image} 
+                className="h-full w-full"
+                revealText="DECRYPTED"
+            />
+        </motion.div>
+        <div className="absolute inset-0 bg-[radial-gradient(120%_80%_at_50%_0%,transparent_20%,rgba(0,0,0,0.6)_85%)] pointer-events-none" />
+        <div className="absolute inset-0 noise pointer-events-none" />
 
-        <div className="relative aspect-[16/10] min-h-[560px] sm:min-h-[640px] lg:aspect-[16/9]">
+        <div className="relative aspect-[16/10] min-h-[560px] sm:min-h-[640px] lg:aspect-[16/9] pointer-events-none">
           <motion.div
             style={{ y: textY }}
-            className={`absolute z-10 flex max-w-xl flex-col gap-5 px-6 sm:px-12 ${
+            className={`absolute z-10 flex max-w-xl flex-col gap-5 px-6 sm:px-12 pointer-events-auto ${
               align === "right"
                 ? "right-0 top-1/2 -translate-y-1/2 text-right items-end"
                 : "left-0 top-1/2 -translate-y-1/2 text-left items-start"

@@ -18,6 +18,7 @@ function NewScan() {
   const [target, setTarget] = useState("");
   const [type, setType] = useState<"web" | "network" | "malware">("web");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -37,9 +38,12 @@ function NewScan() {
       const data = await res.json();
       if (data.success) {
         navigate({ to: "/dashboard" });
+      } else {
+        setErrorMessage(data.message || 'Failed to start scan');
       }
     } catch (err) {
       console.error("Failed to start scan:", err);
+      setErrorMessage((err as any)?.message || 'Network error');
     } finally {
       setIsSubmitting(false);
     }
@@ -55,6 +59,9 @@ function NewScan() {
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-8">
+        {errorMessage && (
+          <div className="p-3 bg-red-600 text-white rounded">{errorMessage}</div>
+        )}
         <div className="space-y-4">
           <label className="text-[10px] uppercase tracking-widest font-mono text-white/40 block">
             Scan Type Selection

@@ -2,6 +2,7 @@ import { motion } from "framer-motion";
 import { Shield, ArrowRight } from "lucide-react";
 import frameArt from "@/assets/scene-temple.jpg";
 import chipArt from "@/assets/hero-garden.jpg";
+import { ScratchImage } from "./ScratchImage";
 
 const nav = ["Platform", "Customers", "FAQ"];
 
@@ -116,12 +117,11 @@ export function Hero() {
           <div className="absolute -inset-x-20 -top-10 -bottom-10 -z-10 rounded-[40px] bg-[radial-gradient(ellipse_at_center,oklch(0.78_0.14_200/0.25),transparent_65%)] blur-2xl" />
 
           <ArtFrame>
-            <img
+            <ScratchImage 
               src={frameArt}
               alt="Aegis security console"
-              width={1920}
-              height={1280}
-              className="block h-full w-full object-cover"
+              className="h-full w-full"
+              revealText="ANALYZING"
             />
             {/* Subtle scan line over the artwork */}
             <div className="pointer-events-none absolute inset-0 animate-scan-line bg-gradient-to-b from-transparent via-cyber/10 to-transparent" />

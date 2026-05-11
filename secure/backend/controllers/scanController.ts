@@ -12,6 +12,7 @@ const scanSchema = Joi.object({
 
 export const startScan = async (req: Request, res: Response) => {
   try {
+    console.log('[Controller] startScan called with body:', req.body);
     const { error, value } = scanSchema.validate(req.body);
     if (error) return res.status(400).json({ success: false, message: error.details[0].message });
 
@@ -27,6 +28,8 @@ export const startScan = async (req: Request, res: Response) => {
       target: value.target,
       type: value.type
     });
+
+    console.log(`[Controller] Scan created ${newScan._id} type=${value.type} target=${value.target}`);
 
     return res.status(201).json({
       success: true,
