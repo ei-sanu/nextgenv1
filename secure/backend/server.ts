@@ -1,10 +1,13 @@
+import dotenv from 'dotenv';
+// Load environment variables immediately at the top
+dotenv.config();
+
 import express, { Application, Request, Response, NextFunction } from 'express';
 import http from 'http';
 import cors from 'cors';
 import helmet from 'helmet';
 import morgan from 'morgan';
 import cookieParser from 'cookie-parser';
-import dotenv from 'dotenv';
 import rateLimit from 'express-rate-limit';
 import mongoSanitize from 'express-mongo-sanitize';
 // @ts-ignore
@@ -17,9 +20,6 @@ import reportRoutes from './routes/reportRoutes';
 import analyticsRoutes from './routes/analyticsRoutes';
 import logger from './utils/logger';
 import '../workers/scanWorker';
-
-// Load environment variables
-dotenv.config();
 
 const app: Application = express();
 const server = http.createServer(app);

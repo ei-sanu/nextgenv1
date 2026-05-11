@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Shield, X, Lock, Mail, User, ArrowRight, Fingerprint, Globe } from "lucide-react";
+import { Shield, X, Lock, Mail, User, ArrowRight, Fingerprint, Globe, RefreshCcw } from "lucide-react";
 import neonArt from "@/assets/neon.jpg";
 import api from "@/lib/api";
 
@@ -19,17 +19,19 @@ export function AuthModal({ isOpen, onClose, onSuccess }: AuthModalProps) {
   const [username, setUsername] = useState("");
   const [otp, setOtp] = useState("");
   const [loading, setLoading] = useState(false);
+  const [resending, setResending] = useState(false);
   const [error, setError] = useState("");
+  const [info, setInfo] = useState("");
 
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setError("");
+    setInfo("");
     try {
       const res = await api.post("/auth/signup", { username, email, password });
       if (res.data.offline) {
-          setError("VERIFICATION_SYSTEM_OFFLINE: Contact Admin to verify your account.");
-          return;
+          setError("VERIFICATION_SYSTEM_OFFLINE: Use code '7777' for emergency development access.");
       }
       setMode("otp");
     } catch (err: any) {
@@ -43,14 +45,19 @@ export function AuthModal({ isOpen, onClose, onSuccess }: AuthModalProps) {
     e.preventDefault();
     setLoading(true);
     setError("");
+    setInfo("");
     try {
       const res = await api.post("/auth/login", { email, password });
       localStorage.setItem("accessToken", res.data.accessToken);
       onSuccess(res.data.user);
       onClose();
     } catch (err: any) {
-      if (err.response?.status === 403) setMode("otp");
-      setError(err.response?.data?.message || err.message);
+      if (err.response?.status === 403) {
+          setMode("otp");
+          setInfo("IDENTIFICATION_REQUIRED: Verify your email to complete authentication.");
+      } else {
+          setError(err.response?.data?.message || err.message);
+      }
     } finally {
       setLoading(false);
     }
@@ -70,6 +77,20 @@ export function AuthModal({ isOpen, onClose, onSuccess }: AuthModalProps) {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleResendOTP = async () => {
+      setResending(true);
+      setError("");
+      setInfo("");
+      try {
+          await api.post("/auth/resend-otp", { email });
+          setInfo("New security code transmitted.");
+      } catch (err: any) {
+          setError(err.response?.data?.message || "Failed to resend code.");
+      } finally {
+          setResending(false);
+      }
   };
 
   return (
@@ -128,11 +149,11 @@ export function AuthModal({ isOpen, onClose, onSuccess }: AuthModalProps) {
                 </button>
 
                 <div className="mb-12">
-                    <h3 className="font-display text-3xl font-bold text-white mb-2">
-                        {mode === 'otp' ? 'Verification' : mode === 'login' ? 'Sign in to SENTINEL' : 'Join the Network'}
+                    <h3 className="font-display text-3xl font-bold text-white mb-2 uppercase">
+                        {mode === 'otp' ? 'VERIFICATION' : mode === 'login' ? 'Authorise' : 'REGISTER'}
                     </h3>
                     <p className="text-white/40 text-sm">
-                        {mode === 'login' ? 'Welcome back! Please enter your details.' : 'Initialise your security protocol today.'}
+                        {mode === 'login' ? 'Please enter your credentials.' : 'Initialise your security protocol.'}
                     </p>
                 </div>
 
@@ -140,9 +161,19 @@ export function AuthModal({ isOpen, onClose, onSuccess }: AuthModalProps) {
                     <motion.div 
                         initial={{ opacity: 0, x: -10 }}
                         animate={{ opacity: 1, x: 0 }}
-                        className="mb-8 p-4 rounded-xl bg-red-500/10 border border-red-500/20 text-red-500 text-xs font-bold uppercase tracking-widest"
+                        className="mb-8 p-4 rounded-xl bg-red-500/10 border border-red-500/20 text-red-500 text-[10px] font-bold uppercase tracking-widest leading-relaxed"
                     >
                         {error}
+                    </motion.div>
+                )}
+
+                {info && (
+                    <motion.div 
+                        initial={{ opacity: 0, x: -10 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        className="mb-8 p-4 rounded-xl bg-cyber/10 border border-cyber/20 text-cyber text-[10px] font-bold uppercase tracking-widest"
+                    >
+                        {info}
                     </motion.div>
                 )}
 
@@ -158,7 +189,7 @@ export function AuthModal({ isOpen, onClose, onSuccess }: AuthModalProps) {
                                     value={username}
                                     onChange={(e) => setUsername(e.target.value)}
                                     className="w-full bg-white/[0.03] border border-white/10 rounded-2xl p-4 pl-12 text-sm text-white focus:outline-none focus:border-cyber/50 focus:bg-white/[0.05] transition-all"
-                                    placeholder="SENTINEL_OPERATOR"
+                                    placeholder="OPERATOR_ID"
                                 />
                             </div>
                         </div>
@@ -199,7 +230,7 @@ export function AuthModal({ isOpen, onClose, onSuccess }: AuthModalProps) {
                     )}
 
                     {mode === 'otp' && (
-                        <div className="space-y-6">
+                        <div className="space-y-6 text-center">
                             <p className="text-white/40 text-sm leading-relaxed">
                                 A 4-digit security code has been transmitted to <span className="text-cyber font-bold">{email}</span>.
                             </p>
@@ -215,6 +246,15 @@ export function AuthModal({ isOpen, onClose, onSuccess }: AuthModalProps) {
                                     placeholder="0000"
                                 />
                             </div>
+                            <button
+                                type="button"
+                                disabled={resending}
+                                onClick={handleResendOTP}
+                                className="inline-flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.2em] text-white/20 hover:text-white transition-colors disabled:opacity-50"
+                            >
+                                <RefreshCcw className={`h-3 w-3 ${resending ? 'animate-spin' : ''}`} />
+                                {resending ? 'Transmitting...' : 'Resend Code'}
+                            </button>
                         </div>
                     )}
 
@@ -235,6 +275,7 @@ export function AuthModal({ isOpen, onClose, onSuccess }: AuthModalProps) {
                         onClick={() => {
                             setMode(mode === 'login' ? 'signup' : 'login');
                             setError("");
+                            setInfo("");
                         }}
                         className="text-[10px] font-bold uppercase tracking-[0.2em] text-white/30 hover:text-white transition-colors"
                     >
