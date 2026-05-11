@@ -116,7 +116,7 @@ export const signup = async (req: Request, res: Response) => {
 
     if (!emailSent) {
         return res.status(200).json({ 
-            message: 'User record updated, but verification email could not be sent. Check backend logs.',
+            message: 'User initialized, but verification system is OFFLINE. (Note: Use your 16-digit Google App Password in .env).',
             offline: true 
         });
     }
@@ -140,7 +140,9 @@ export const resendOTP = async (req: Request, res: Response) => {
         await user.save();
 
         const sent = await sendOTPEmail(email, user.username, otp);
-        if (!sent) return res.status(500).json({ message: 'Failed to send email. Check credentials.' });
+        if (!sent) return res.status(500).json({ 
+            message: 'TRANSMISSION_FAILED: Use your 16-digit Google App Password in .env, not your regular password.' 
+        });
 
         res.status(200).json({ message: 'New OTP transmitted.' });
     } catch (error: any) {
