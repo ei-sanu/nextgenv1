@@ -2,7 +2,7 @@ import axios from "axios";
 
 const api = axios.create({
   baseURL: "/api",
-  withCredentials: true, // Crucial for sending/receiving cookies
+  withCredentials: true,
 });
 
 // Request interceptor to add the access token
@@ -17,28 +17,32 @@ api.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
-// Response interceptor to handle token refresh
+// Response interceptor to handle token refresh and non-JSON errors
 api.interceptors.response.use(
   (response) => response,
   async (error) => {
     const originalRequest = error.config;
+
+    // Check if the response is HTML (likely a 404/500 from the dev server)
+    const contentType = error.response?.headers?.["content-type"];
+    if (contentType && contentType.includes("text/html")) {
+        console.error("API Error: Received HTML instead of JSON. Check if the backend is running and the proxy is configured correctly.");
+        return Promise.reject(new Error("Internal Server Error (Received HTML)"));
+    }
 
     // If 401 and not already retrying
     if (error.response?.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true;
 
       try {
-        // Attempt to refresh the token
         const res = await axios.post("/api/auth/refresh-token", {}, { withCredentials: true });
         const { accessToken } = res.data;
 
         localStorage.setItem("accessToken", accessToken);
         originalRequest.headers.Authorization = `Bearer ${accessToken}`;
 
-        // Retry the original request
         return api(originalRequest);
       } catch (refreshError) {
-        // Refresh failed, clear everything and redirect to login if necessary
         localStorage.removeItem("accessToken");
         localStorage.removeItem("user");
         window.dispatchEvent(new Event("auth-failure"));

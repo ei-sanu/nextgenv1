@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Shield, X, Lock, Mail, User, ArrowRight, Fingerprint, Globe } from "lucide-react";
 import neonArt from "@/assets/neon.jpg";
+import api from "@/lib/api";
 
 interface AuthModalProps {
   isOpen: boolean;
@@ -25,16 +26,10 @@ export function AuthModal({ isOpen, onClose, onSuccess }: AuthModalProps) {
     setLoading(true);
     setError("");
     try {
-      const res = await fetch("/api/auth/signup", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ username, email, password }),
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.message);
+      await api.post("/auth/signup", { username, email, password });
       setMode("otp");
     } catch (err: any) {
-      setError(err.message);
+      setError(err.response?.data?.message || err.message);
     } finally {
       setLoading(false);
     }
@@ -45,21 +40,13 @@ export function AuthModal({ isOpen, onClose, onSuccess }: AuthModalProps) {
     setLoading(true);
     setError("");
     try {
-      const res = await fetch("/api/auth/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
-      });
-      const data = await res.json();
-      if (!res.ok) {
-          if (res.status === 403) setMode("otp");
-          throw new Error(data.message);
-      }
-      localStorage.setItem("accessToken", data.accessToken);
-      onSuccess(data.user);
+      const res = await api.post("/auth/login", { email, password });
+      localStorage.setItem("accessToken", res.data.accessToken);
+      onSuccess(res.data.user);
       onClose();
     } catch (err: any) {
-      setError(err.message);
+      if (err.response?.status === 403) setMode("otp");
+      setError(err.response?.data?.message || err.message);
     } finally {
       setLoading(false);
     }
@@ -70,18 +57,12 @@ export function AuthModal({ isOpen, onClose, onSuccess }: AuthModalProps) {
     setLoading(true);
     setError("");
     try {
-      const res = await fetch("/api/auth/verify-otp", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, otp }),
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.message);
-      localStorage.setItem("accessToken", data.accessToken);
-      onSuccess(data.user);
+      const res = await api.post("/auth/verify-otp", { email, otp });
+      localStorage.setItem("accessToken", res.data.accessToken);
+      onSuccess(res.data.user);
       onClose();
     } catch (err: any) {
-      setError(err.message);
+      setError(err.response?.data?.message || err.message);
     } finally {
       setLoading(false);
     }
