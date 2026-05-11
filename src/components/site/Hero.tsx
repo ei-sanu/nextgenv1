@@ -39,43 +39,6 @@ export function Hero() {
 
       <div className="absolute inset-0 noise opacity-20" />
 
-      {/* Top nav */}
-      <motion.header
-        initial={{ y: -16, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-        className="fixed top-0 left-0 right-0 z-50 mx-auto flex max-w-7xl items-center justify-between px-6 pt-7 sm:px-10"
-      >
-        <a className="flex items-center gap-2 text-white group" data-magnetic="true">
-          <div className="relative">
-            <Shield className="h-5 w-5 text-cyber transition-transform group-hover:scale-110" />
-            <div className="absolute inset-0 bg-cyber/20 blur-lg rounded-full" />
-          </div>
-          <span className="font-display text-[16px] font-bold tracking-[0.25em] bg-clip-text text-transparent bg-gradient-to-r from-white to-white/60">
-            SENTINEL
-          </span>
-        </a>
-
-        <nav className="absolute left-1/2 hidden -translate-x-1/2 items-center gap-10 md:flex">
-          {nav.map((l) => (
-            <a
-              key={l}
-              href="#"
-              className="group relative text-[12px] uppercase tracking-[0.2em] text-white/50 hover:text-white transition"
-              data-magnetic="true"
-            >
-              {l}
-              <span className="absolute -bottom-1 left-0 h-px w-0 bg-cyber transition-all group-hover:w-full" />
-            </a>
-          ))}
-        </nav>
-
-        <button className="relative overflow-hidden rounded-full px-6 py-2 text-[12px] font-bold uppercase tracking-widest text-neutral-900 transition-all hover:scale-105 active:scale-95" data-magnetic="true">
-          <div className="absolute inset-0 bg-white" />
-          <span className="relative z-10">Access Console</span>
-        </button>
-      </motion.header>
-
       {/* Hero content */}
       <div className="relative z-10 mx-auto flex max-w-7xl flex-col items-center px-6 pb-20 pt-32 text-center">
         
