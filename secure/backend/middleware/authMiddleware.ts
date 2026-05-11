@@ -1,8 +1,8 @@
 import { Request, Response, NextFunction } from 'express';
-import jwt from 'jsonwebtoken';
+import jwt, { Secret } from 'jsonwebtoken';
 import User from '../models/User';
 
-const ACCESS_SECRET = process.env.JWT_ACCESS_SECRET || 'access-secret';
+const ACCESS_SECRET = (process.env.JWT_ACCESS_SECRET || 'access-secret') as Secret;
 
 export const protect = async (req: Request, res: Response, next: NextFunction) => {
   try {

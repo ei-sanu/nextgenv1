@@ -1,14 +1,14 @@
 import { Request, Response } from 'express';
 import User, { IUser } from '../models/User';
 import RefreshToken from '../models/RefreshToken';
-import jwt from 'jsonwebtoken';
+import jwt, { Secret } from 'jsonwebtoken';
 import nodemailer from 'nodemailer';
 import crypto from 'crypto';
 
-const ACCESS_SECRET = process.env.JWT_ACCESS_SECRET || 'access-secret';
-const REFRESH_SECRET = process.env.JWT_REFRESH_SECRET || 'refresh-secret';
-const ACCESS_EXPIRY = process.env.ACCESS_TOKEN_EXPIRES || '15m';
-const REFRESH_EXPIRY = process.env.REFRESH_TOKEN_EXPIRES || '10h';
+const ACCESS_SECRET = (process.env.JWT_ACCESS_SECRET || 'access-secret') as Secret;
+const REFRESH_SECRET = (process.env.JWT_REFRESH_SECRET || 'refresh-secret') as Secret;
+const ACCESS_EXPIRY = (process.env.ACCESS_TOKEN_EXPIRES || '15m') as any;
+const REFRESH_EXPIRY = (process.env.REFRESH_TOKEN_EXPIRES || '10h') as any;
 
 const EMAIL_USER = process.env.EMAIL_USER || 'cyberarcnova@gmail.com';
 const EMAIL_PASS = process.env.EMAIL_APP_PASSWORD;

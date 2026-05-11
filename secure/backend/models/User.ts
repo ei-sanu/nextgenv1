@@ -9,6 +9,7 @@ export interface IUser extends Document {
   isVerified: boolean;
   otp?: string;
   otpExpires?: Date;
+  lastActive: Date;
   createdAt: Date;
   lastLogin: Date;
   comparePassword(password: string): Promise<boolean>;

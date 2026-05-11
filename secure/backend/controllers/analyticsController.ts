@@ -2,7 +2,7 @@ import { Request, Response } from 'express';
 import Scan from '../models/Scan';
 import Vulnerability from '../models/Vulnerability';
 
-export const getAnalytics = async (req: Request, res: Response) => {
+export const getOverviewStats = async (req: Request, res: Response) => {
   try {
     const totalScans = await Scan.countDocuments();
     const completedScans = await Scan.countDocuments({ status: 'completed' });
@@ -40,4 +40,13 @@ export const getAnalytics = async (req: Request, res: Response) => {
   } catch (err: any) {
     return res.status(500).json({ success: false, message: err.message });
   }
+};
+
+export const getSecurityScoreTrend = async (req: Request, res: Response) => {
+    try {
+        // Implementation for trend data (placeholder)
+        res.status(200).json({ success: true, data: [] });
+    } catch (err: any) {
+        return res.status(500).json({ success: false, message: err.message });
+    }
 };
