@@ -3,17 +3,18 @@ import { Hero } from "@/components/site/Hero";
 import { Story } from "@/components/site/Story";
 import { Metrics } from "@/components/site/Metrics";
 import { CtaFooter } from "@/components/site/CtaFooter";
+import { Atmosphere } from "@/components/site/Atmosphere";
 
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Aegis — Defend systems while you sleep" },
+      { title: "SENTINEL — Absolute Security for the NextGen" },
       {
         name: "description",
         content:
           "A cinematic AI cybersecurity command center. Continuous web, network and malware intelligence orchestrated by autonomous agents.",
       },
-      { property: "og:title", content: "Aegis — Defend systems while you sleep" },
+      { property: "og:title", content: "SENTINEL — Absolute Security" },
       {
         property: "og:description",
         content:
@@ -27,6 +28,7 @@ export const Route = createFileRoute("/")({
 function Index() {
   return (
     <main className="relative min-h-screen overflow-x-clip bg-background pb-6">
+      <Atmosphere />
       <Hero />
       <Story />
       <Metrics />

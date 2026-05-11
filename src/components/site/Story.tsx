@@ -1,4 +1,4 @@
-import { StoryChapter } from "./StoryChapter";
+import { StoryChapter } from "../interactive/StoryChapter";
 import temple from "@/assets/scene-temple.jpg";
 import sentinel from "@/assets/scene-sentinel.jpg";
 import vault from "@/assets/scene-vault.jpg";
