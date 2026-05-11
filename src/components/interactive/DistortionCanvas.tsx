@@ -1,9 +1,12 @@
 "use client";
 
 import React, { useRef, useState, useEffect } from "react";
-import { Canvas, useFrame, useThree } from "@react-three/fiber";
+import { Canvas, useFrame, useThree, extend } from "@react-three/fiber";
 import * as THREE from "three";
 import { FluidDistortionMaterialImpl } from "./DistortionShaderMaterial";
+
+// Register the custom material with R3F
+extend({ FluidDistortionMaterial: FluidDistortionMaterialImpl });
 
 function Scene() {
   const materialRef = useRef<any>(null);

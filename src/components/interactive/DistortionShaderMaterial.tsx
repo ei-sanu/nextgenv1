@@ -2,9 +2,8 @@
 
 import * as THREE from "three";
 import { shaderMaterial } from "@react-three/drei";
-import { extend } from "@react-three/fiber";
 
-const FluidDistortionMaterialImpl = shaderMaterial(
+export const FluidDistortionMaterialImpl = shaderMaterial(
   {
     uTime: 0,
     uMouse: new THREE.Vector2(0, 0),
@@ -113,11 +112,6 @@ const FluidDistortionMaterialImpl = shaderMaterial(
   `
 );
 
-extend({ FluidDistortionMaterial: FluidDistortionMaterialImpl });
-
-export { FluidDistortionMaterialImpl };
-
-// Add TypeScript support for the extended element
 declare global {
   namespace JSX {
     interface IntrinsicElements {
