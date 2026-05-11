@@ -26,7 +26,8 @@ api.interceptors.response.use(
     // Check if the response is HTML (likely a 404/500 from the dev server)
     const contentType = error.response?.headers?.["content-type"];
     if (contentType && contentType.includes("text/html")) {
-        console.error("API Error: Received HTML instead of JSON. Check if the backend is running and the proxy is configured correctly.");
+        const htmlSnippet = typeof error.response.data === 'string' ? error.response.data.substring(0, 200) : '[Binary/Object]';
+        console.error("API Error: Received HTML instead of JSON.", htmlSnippet);
         return Promise.reject(new Error("Internal Server Error (Received HTML)"));
     }
 

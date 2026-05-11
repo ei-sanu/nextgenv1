@@ -16,7 +16,7 @@ import scanRoutes from './routes/scanRoutes';
 import reportRoutes from './routes/reportRoutes';
 import analyticsRoutes from './routes/analyticsRoutes';
 import logger from './utils/logger';
-import '../workers/scanWorker'; // Initialize background scan worker
+import '../workers/scanWorker';
 
 // Load environment variables
 dotenv.config();
@@ -24,23 +24,20 @@ dotenv.config();
 const app: Application = express();
 const server = http.createServer(app);
 
-// Connect to Database
-connectDB();
-
 // Security Middleware
 app.use(helmet());
 app.use(cors({ origin: true, credentials: true }));
 app.use(cookieParser());
 app.use(express.json({ limit: '10kb' }));
-app.use(morgan('dev')); // Centralized basic logging
+app.use(morgan('dev'));
 app.use(mongoSanitize());
 app.use(xss());
 
 // Rate Limiting
 const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100, // limit each IP to 100 requests per windowMs
-  message: 'Too many requests from this IP, please try again later.'
+  windowMs: 15 * 60 * 1000,
+  max: 100,
+  message: { success: false, message: 'Too many requests, please try again later.' }
 });
 app.use('/api/', limiter);
 
@@ -55,6 +52,11 @@ app.get('/health', (req: Request, res: Response) => {
   res.status(200).json({ status: 'ok', message: 'Secure Scanner API is running' });
 });
 
+// 404 handler for unknown API routes
+app.use('/api/*', (req: Request, res: Response) => {
+  res.status(404).json({ success: false, message: 'API Route Not Found' });
+});
+
 // Error handling middleware
 app.use((err: any, req: Request, res: Response, next: NextFunction) => {
   logger.error(err.stack);
@@ -67,8 +69,18 @@ app.use((err: any, req: Request, res: Response, next: NextFunction) => {
 // Initialize Socket.io
 setupSocketIO(server);
 
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 5001;
 
-server.listen(PORT, () => {
-  logger.info(`[Server] Unified Security Backend running on port ${PORT}`);
-});
+const startServer = async () => {
+  try {
+    await connectDB();
+    server.listen(PORT, () => {
+      logger.info(`[Server] Unified Security Backend running on port ${PORT}`);
+    });
+  } catch (error) {
+    logger.error('Failed to start server:', error);
+    process.exit(1);
+  }
+};
+
+startServer();

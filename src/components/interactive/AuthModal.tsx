@@ -26,7 +26,11 @@ export function AuthModal({ isOpen, onClose, onSuccess }: AuthModalProps) {
     setLoading(true);
     setError("");
     try {
-      await api.post("/auth/signup", { username, email, password });
+      const res = await api.post("/auth/signup", { username, email, password });
+      if (res.data.offline) {
+          setError("VERIFICATION_SYSTEM_OFFLINE: Contact Admin to verify your account.");
+          return;
+      }
       setMode("otp");
     } catch (err: any) {
       setError(err.response?.data?.message || err.message);

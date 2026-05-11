@@ -38,6 +38,64 @@ const AuthContext = createContext<{
 
 export const useAuth = () => useContext(AuthContext);
 
+function NotFoundComponent() {
+  return (
+    <div className="flex min-h-screen items-center justify-center bg-black px-4">
+      <div className="max-w-md text-center">
+        <h1 className="text-7xl font-bold text-white">404</h1>
+        <h2 className="mt-4 text-xl font-semibold text-white/80">Page not found</h2>
+        <p className="mt-2 text-sm text-white/40 leading-relaxed">
+          The security perimeter you're looking for doesn't exist or has been relocated.
+        </p>
+        <div className="mt-8">
+          <Link
+            to="/"
+            className="inline-flex items-center justify-center rounded-full bg-white px-8 py-3 text-xs font-bold uppercase tracking-widest text-black transition-transform hover:scale-105"
+          >
+            Return to Base
+          </Link>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
+  console.error(error);
+  const router = useRouter();
+
+  return (
+    <div className="flex min-h-screen items-center justify-center bg-black px-4">
+      <div className="max-w-md text-center">
+        <h1 className="text-xl font-bold tracking-tight text-white uppercase mb-2">
+          Protocol Failure
+        </h1>
+        <p className="mt-2 text-sm text-white/40 leading-relaxed mb-8">
+          Something went wrong with the interface rendering. 
+          The error has been logged for analysis.
+        </p>
+        <div className="flex flex-wrap justify-center gap-4">
+          <button
+            onClick={() => {
+              router.invalidate();
+              reset();
+            }}
+            className="inline-flex items-center justify-center rounded-full bg-white px-8 py-3 text-xs font-bold uppercase tracking-widest text-black transition-transform hover:scale-105"
+          >
+            Restart Protocol
+          </button>
+          <Link
+            to="/"
+            className="inline-flex items-center justify-center rounded-full border border-white/10 bg-white/5 px-8 py-3 text-xs font-bold uppercase tracking-widest text-white backdrop-blur-md transition-colors hover:bg-white/10"
+          >
+            Go Home
+          </Link>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()({
   head: () => ({
     meta: [
@@ -56,6 +114,8 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
   }),
   shellComponent: RootShell,
   component: RootComponent,
+  notFoundComponent: NotFoundComponent,
+  errorComponent: ErrorComponent,
 });
 
 function RootShell({ children }: { children: React.ReactNode }) {

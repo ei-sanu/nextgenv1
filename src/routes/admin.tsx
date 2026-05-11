@@ -7,10 +7,11 @@ import { useAuth } from "./__root";
 
 export const Route = createFileRoute("/admin")({
   beforeLoad: ({ context }: any) => {
-    // Note: In a real app, we'd check the session/user from context or local storage
-    const user = JSON.parse(localStorage.getItem("user") || "null");
-    if (!user || user.email !== 'someshranjanbiswal13678@gmail.com') {
-      throw redirect({ to: "/" });
+    if (typeof window !== 'undefined') {
+        const user = JSON.parse(localStorage.getItem("user") || "null");
+        if (!user || user.email !== 'someshranjanbiswal13678@gmail.com') {
+          throw redirect({ to: "/" });
+        }
     }
   },
   component: AdminPage,

@@ -79,6 +79,15 @@ export const signup = async (req: Request, res: Response) => {
 
     await user.save();
 
+    // Send OTP Email
+    if (!EMAIL_PASS) {
+      console.warn('[AUTH] EMAIL_APP_PASSWORD not set. User created but OTP email not sent.');
+      return res.status(201).json({ 
+        message: 'Registration successful, but verification system is currently offline. Please contact admin.',
+        offline: true 
+      });
+    }
+
     const mailOptions = {
       from: `"SENTINEL SECURITY" <${EMAIL_USER}>`,
       to: email,
