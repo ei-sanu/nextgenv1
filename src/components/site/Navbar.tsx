@@ -2,8 +2,9 @@
 
 import { Link } from "@tanstack/react-router";
 import { motion, AnimatePresence } from "framer-motion";
-import { Shield, Menu, X, Activity, Globe, Lock, FileSearch } from "lucide-react";
+import { Shield, Menu, X, Activity, Globe, Lock, FileSearch, User as UserIcon, LogOut, Settings } from "lucide-react";
 import { useState, useEffect } from "react";
+import { useAuth } from "@/routes/__root";
 
 const links = [
   { label: "Privacy", href: "/privacy", icon: Lock },
@@ -15,6 +16,7 @@ const links = [
 export function Navbar() {
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const { user, openAuth, logout } = useAuth();
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 20);
@@ -33,7 +35,7 @@ export function Navbar() {
         pointer-events-auto w-full max-w-5xl rounded-[32px] px-6 py-3 transition-all duration-500
         ${scrolled 
           ? "bg-black/40 backdrop-blur-2xl border border-white/10 shadow-[0_20px_50px_-20px_rgba(0,0,0,0.5)]" 
-          : "bg-transparent border border-transparent"}
+          : "bg-black/25 backdrop-blur-xl border border-white/10 shadow-[0_10px_30px_-20px_rgba(0,0,0,0.7)]"}
       `}>
         <div className="flex items-center justify-between gap-10">
           <Link to="/" className="flex items-center gap-3 group" data-magnetic="true">
@@ -51,29 +53,55 @@ export function Navbar() {
               <li key={l.label}>
                 <Link
                   to={l.href}
-                  className="group relative flex items-center gap-2 px-5 py-2.5 rounded-full text-[11px] font-bold uppercase tracking-[0.2em] text-white/40 transition-all hover:text-white hover:bg-white/5"
+                  className="group relative flex items-center gap-2 px-5 py-2.5 rounded-full text-[11px] font-bold uppercase tracking-[0.2em] text-white/75 transition-all hover:text-white hover:bg-white/10"
                   data-magnetic="true"
                   activeProps={{ className: "!text-cyber !bg-cyber/5 !border-cyber/20" }}
                 >
                   <l.icon className="h-3.5 w-3.5 opacity-0 -ml-2 group-hover:opacity-100 group-hover:ml-0 transition-all duration-300" />
                   {l.label}
-                  <motion.span 
-                    layoutId="nav-hover"
-                    className="absolute inset-0 rounded-full border border-white/10 opacity-0 group-hover:opacity-100" 
-                  />
                 </Link>
               </li>
             ))}
+            {user?.role === 'admin' && (
+              <li>
+                <Link
+                  to="/admin"
+                  className="group relative flex items-center gap-2 px-5 py-2.5 rounded-full text-[11px] font-bold uppercase tracking-[0.2em] text-amber-500 transition-all hover:text-amber-400 hover:bg-amber-500/5"
+                  data-magnetic="true"
+                  activeProps={{ className: "!text-amber-400 !bg-amber-500/10" }}
+                >
+                  <Settings className="h-3.5 w-3.5" />
+                  Admin
+                </Link>
+              </li>
+            )}
           </ul>
 
           <div className="hidden md:flex items-center gap-4">
-            <button className="text-[11px] font-bold uppercase tracking-[0.2em] text-white/30 hover:text-white transition" data-magnetic="true">
-              Sign In
-            </button>
-            <button className="relative group px-6 py-2.5 rounded-full bg-white text-black text-[11px] font-bold uppercase tracking-[0.2em] transition-transform hover:scale-105 active:scale-95" data-magnetic="true">
-              <span className="relative z-10">Console</span>
-              <div className="absolute inset-0 rounded-full bg-cyber/20 blur-md opacity-0 group-hover:opacity-100 transition-opacity" />
-            </button>
+            {!user ? (
+                <button 
+                    onClick={openAuth}
+                    className="relative group px-6 py-2.5 rounded-full bg-white text-black text-[11px] font-bold uppercase tracking-[0.2em] transition-transform hover:scale-105 active:scale-95 pointer-events-auto" 
+                    data-magnetic="true"
+                >
+                    <span className="relative z-10">Access Protocol</span>
+                    <div className="absolute inset-0 rounded-full bg-cyber/20 blur-md opacity-0 group-hover:opacity-100 transition-opacity" />
+                </button>
+            ) : (
+                <div className="flex items-center gap-4 bg-white/5 border border-white/10 p-1 pl-4 rounded-full">
+                    <div className="flex flex-col items-start pr-2">
+                        <span className="font-mono text-[9px] font-bold text-cyber uppercase tracking-tighter">Authorized User</span>
+                        <span className="font-display text-[11px] font-bold text-white uppercase">{user.username}</span>
+                    </div>
+                    <button 
+                        onClick={logout}
+                        className="h-8 w-8 flex items-center justify-center rounded-full bg-red-500/10 text-red-500 hover:bg-red-500 hover:text-white transition-colors"
+                        title="Logout Protocol"
+                    >
+                        <LogOut className="h-4 w-4" />
+                    </button>
+                </div>
+            )}
           </div>
 
           <button
@@ -104,9 +132,21 @@ export function Navbar() {
                   {l.label}
                 </Link>
               ))}
-              <button className="mt-4 w-full py-4 rounded-2xl bg-white text-black font-bold uppercase tracking-[0.2em] text-sm">
-                Launch Console
-              </button>
+              {!user ? (
+                <button 
+                    onClick={() => { setOpen(false); openAuth(); }}
+                    className="mt-4 w-full py-4 rounded-2xl bg-white text-black font-bold uppercase tracking-[0.2em] text-sm"
+                >
+                    Launch Console
+                </button>
+              ) : (
+                  <button 
+                    onClick={() => { setOpen(false); logout(); }}
+                    className="mt-4 w-full py-4 rounded-2xl bg-red-500 text-white font-bold uppercase tracking-[0.2em] text-sm"
+                  >
+                    Logout Protocol
+                  </button>
+              )}
             </motion.div>
           )}
         </AnimatePresence>

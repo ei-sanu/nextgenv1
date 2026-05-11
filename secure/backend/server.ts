@@ -10,6 +10,7 @@ import mongoSanitize from 'express-mongo-sanitize';
 import xss from 'xss-clean';
 import { connectDB } from './configs/database';
 import { setupSocketIO } from '../sockets';
+import authRoutes from './routes/authRoutes';
 import scanRoutes from './routes/scanRoutes';
 import reportRoutes from './routes/reportRoutes';
 import analyticsRoutes from './routes/analyticsRoutes';
@@ -22,14 +23,13 @@ dotenv.config();
 const app: Application = express();
 const server = http.createServer(app);
 
-// Connect to Database
-connectDB();
-
 // Security Middleware
 app.use(helmet());
 app.use(cors());
 app.use(express.json({ limit: '10kb' }));
 app.use(morgan('dev')); // Centralized basic logging
+app.use(mongoSanitize());
+app.use(xss());
 
 // Rate Limiting
 const limiter = rateLimit({
@@ -40,6 +40,7 @@ const limiter = rateLimit({
 app.use('/api/', limiter);
 
 // Routes
+app.use('/api/auth', authRoutes);
 app.use('/api/scans', scanRoutes);
 app.use('/api/reports', reportRoutes);
 app.use('/api/analytics', analyticsRoutes);
@@ -63,6 +64,11 @@ setupSocketIO(server);
 
 const PORT = process.env.PORT || 5000;
 
-server.listen(PORT, () => {
-  logger.info(`[Server] Unified Security Backend running on port ${PORT}`);
-});
+const bootstrap = async () => {
+  await connectDB();
+  server.listen(PORT, () => {
+    logger.info(`[Server] Unified Security Backend running on port ${PORT}`);
+  });
+};
+
+void bootstrap();

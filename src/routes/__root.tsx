@@ -7,69 +7,36 @@ import {
   HeadContent,
   Scripts,
 } from "@tanstack/react-router";
+import React, { useState, useEffect, createContext, useContext } from "react";
 
 import appCss from "../styles.css?url";
 import { MotionProvider } from "@/components/interactive/MotionProvider";
 import { CursorSystem } from "@/components/interactive/CursorSystem";
 import { DistortionCanvas } from "@/components/interactive/DistortionCanvas";
 import { GlobalLoaderProvider } from "@/components/interactive/GlobalLoader";
+import { AuthModal } from "@/components/interactive/AuthModal";
+import { Navbar } from "@/components/site/Navbar";
 
-function NotFoundComponent() {
-  return (
-    <div className="flex min-h-screen items-center justify-center bg-background px-4">
-      <div className="max-w-md text-center">
-        <h1 className="text-7xl font-bold text-foreground">404</h1>
-        <h2 className="mt-4 text-xl font-semibold text-foreground">Page not found</h2>
-        <p className="mt-2 text-sm text-muted-foreground">
-          The page you're looking for doesn't exist or has been moved.
-        </p>
-        <div className="mt-6">
-          <Link
-            to="/"
-            className="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
-          >
-            Go home
-          </Link>
-        </div>
-      </div>
-    </div>
-  );
-}
+type User = {
+  id: string;
+  username: string;
+  email: string;
+  role: 'admin' | 'user' | 'analyst';
+} | null;
 
-function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
-  console.error(error);
-  const router = useRouter();
+const AuthContext = createContext<{
+  user: User;
+  setUser: (user: User) => void;
+  openAuth: () => void;
+  logout: () => void;
+}>({ 
+  user: null, 
+  setUser: () => {}, 
+  openAuth: () => {},
+  logout: () => {}
+});
 
-  return (
-    <div className="flex min-h-screen items-center justify-center bg-background px-4">
-      <div className="max-w-md text-center">
-        <h1 className="text-xl font-semibold tracking-tight text-foreground">
-          This page didn't load
-        </h1>
-        <p className="mt-2 text-sm text-muted-foreground">
-          Something went wrong on our end. You can try refreshing or head back home.
-        </p>
-        <div className="mt-6 flex flex-wrap justify-center gap-2">
-          <button
-            onClick={() => {
-              router.invalidate();
-              reset();
-            }}
-            className="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
-          >
-            Try again
-          </button>
-          <a
-            href="/"
-            className="inline-flex items-center justify-center rounded-md border border-input bg-background px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-accent"
-          >
-            Go home
-          </a>
-        </div>
-      </div>
-    </div>
-  );
-}
+export const useAuth = () => useContext(AuthContext);
 
 export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()({
   head: () => ({
@@ -89,24 +56,49 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
   }),
   shellComponent: RootShell,
   component: RootComponent,
-  notFoundComponent: NotFoundComponent,
-  errorComponent: ErrorComponent,
 });
 
 function RootShell({ children }: { children: React.ReactNode }) {
+  const [user, setUser] = useState<User>(null);
+  const [isAuthOpen, setIsAuthOpen] = useState(false);
+
+  useEffect(() => {
+      const storedUser = localStorage.getItem("user");
+      if (storedUser) setUser(JSON.parse(storedUser));
+  }, []);
+
+  const handleSetUser = (u: User) => {
+      setUser(u);
+      if (u) localStorage.setItem("user", JSON.stringify(u));
+      else localStorage.removeItem("user");
+  };
+
+  const logout = () => {
+      handleSetUser(null);
+      localStorage.removeItem("token");
+  };
+
   return (
     <html lang="en">
       <head>
         <HeadContent />
       </head>
       <body>
-        <MotionProvider>
-          <GlobalLoaderProvider>
-            <CursorSystem />
-            <DistortionCanvas />
-            {children}
-          </GlobalLoaderProvider>
-        </MotionProvider>
+        <AuthContext.Provider value={{ user, setUser: handleSetUser, openAuth: () => setIsAuthOpen(true), logout }}>
+            <MotionProvider>
+                <GlobalLoaderProvider>
+                    <Navbar />
+                    <AuthModal 
+                        isOpen={isAuthOpen} 
+                        onClose={() => setIsAuthOpen(false)} 
+                        onSuccess={handleSetUser} 
+                    />
+                    <CursorSystem />
+                    <DistortionCanvas />
+                    {children}
+                </GlobalLoaderProvider>
+            </MotionProvider>
+        </AuthContext.Provider>
         <Scripts />
       </body>
     </html>

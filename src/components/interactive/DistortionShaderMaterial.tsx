@@ -10,6 +10,7 @@ export const FluidDistortionMaterialImpl = shaderMaterial(
     uPrevMouse: new THREE.Vector2(0, 0),
     uVelocity: 0,
     uTexture: null,
+    uHasTexture: false,
     uResolution: new THREE.Vector2(0, 0),
     uHoverState: 0,
   },
@@ -28,6 +29,7 @@ export const FluidDistortionMaterialImpl = shaderMaterial(
     uniform vec2 uPrevMouse;
     uniform float uVelocity;
     uniform sampler2D uTexture;
+    uniform bool uHasTexture;
     uniform vec2 uResolution;
     uniform float uHoverState;
     
@@ -78,8 +80,9 @@ export const FluidDistortionMaterialImpl = shaderMaterial(
       float mouseArea = smoothstep(0.4, 0.0, dist);
       
       // Calculate directional displacement based on mouse movement vector
-      vec2 dir = normalize(uMouse - uPrevMouse);
-      if(length(dir) == 0.0) dir = vec2(0.0);
+      vec2 mouseDelta = uMouse - uPrevMouse;
+      float deltaLen = length(mouseDelta);
+      vec2 dir = deltaLen > 0.0001 ? mouseDelta / deltaLen : vec2(0.0);
       
       // Add noise to the displacement
       float noiseParams = snoise(uv * 5.0 + uTime * 0.5);
@@ -92,7 +95,7 @@ export const FluidDistortionMaterialImpl = shaderMaterial(
       float bOffset = -0.005 * uVelocity * mouseArea;
       
       vec4 texColor;
-      if (uTexture != null) {
+      if (uHasTexture) {
           float r = texture2D(uTexture, uv - displacement + dir * rOffset).r;
           float g = texture2D(uTexture, uv - displacement).g;
           float b = texture2D(uTexture, uv - displacement + dir * bOffset).b;
