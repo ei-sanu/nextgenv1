@@ -5,8 +5,7 @@ import nodemailer from 'nodemailer';
 import crypto from 'crypto';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'cyber-sentinel-vault-key-2026';
-const EMAIL_USER = 'cyberarcnova@gmail.com';
-// Note: In production, use App Passwords or a secure service.
+const EMAIL_USER = process.env.EMAIL_USER || 'cyberarcnova@gmail.com';
 const EMAIL_PASS = process.env.EMAIL_APP_PASSWORD; 
 
 const transporter = nodemailer.createTransport({
