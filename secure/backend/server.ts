@@ -63,11 +63,22 @@ app.use((err: any, req: Request, res: Response, next: NextFunction) => {
 setupSocketIO(server);
 
 const PORT = process.env.PORT || 5000;
+const HOST = process.env.HOST || '127.0.0.1';
 
 const bootstrap = async () => {
-  await connectDB();
-  server.listen(PORT, () => {
-    logger.info(`[Server] Unified Security Backend running on port ${PORT}`);
+  try {
+    await connectDB();
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : String(error);
+    if (process.env.NODE_ENV === 'production') {
+      throw error;
+    }
+    logger.warn(`[Server] MongoDB unavailable in development mode: ${message}`);
+    logger.warn('[Server] API will run, but database-backed endpoints will return errors until DB reconnects.');
+  }
+
+  server.listen(Number(PORT), HOST, () => {
+    logger.info(`[Server] Unified Security Backend running on http://${HOST}:${PORT}`);
   });
 };
 

@@ -1,4 +1,5 @@
 import { Request, Response } from 'express';
+import mongoose from 'mongoose';
 import Scan from '../models/Scan';
 import Vulnerability from '../models/Vulnerability';
 import Log from '../models/Log';
@@ -13,6 +14,13 @@ const scanSchema = Joi.object({
 
 export const startScan = async (req: Request, res: Response) => {
   try {
+    if (mongoose.connection.readyState !== 1) {
+      return res.status(503).json({
+        success: false,
+        message: 'Database is unavailable. Ensure MongoDB Atlas IP access is configured, then retry.'
+      });
+    }
+
     console.log('[Controller] startScan called with body:', req.body);
     const { error, value } = scanSchema.validate(req.body);
     if (error) return res.status(400).json({ success: false, message: error.details[0].message });

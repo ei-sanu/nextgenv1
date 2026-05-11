@@ -16,6 +16,6 @@ export const connectDB = async () => {
   } catch (error: unknown) {
     const message = error instanceof Error ? error.message : String(error);
     console.error(`[MongoDB] Connection Error: ${message}`);
-    process.exit(1);
+    throw error;
   }
 };

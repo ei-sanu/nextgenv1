@@ -13,6 +13,8 @@ export const Route = createFileRoute("/dashboard/new-scan/")({
   component: NewScan,
 });
 
+const API_BASE_URL = (import.meta.env.VITE_API_BASE_URL as string | undefined) || "http://localhost:5001";
+
 function NewScan() {
   const [target, setTarget] = useState("");
   const [type, setType] = useState<"web" | "network" | "malware">("web");
@@ -44,7 +46,7 @@ function NewScan() {
     setScanProgress(5);
 
     try {
-      const res = await fetch("http://localhost:5001/api/scans/start", {
+      const res = await fetch(`${API_BASE_URL}/api/scans/start`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -63,7 +65,12 @@ function NewScan() {
     } catch (err) {
       console.error("Failed to start scan:", err);
       setScanStatus("failed");
-      setErrorMessage((err as any)?.message || 'Network error');
+      const message = (err as any)?.message || "Network error";
+      if (message.includes("Failed to fetch")) {
+        setErrorMessage(`Backend is unreachable at ${API_BASE_URL}. Start the API server and verify port 5001.`);
+      } else {
+        setErrorMessage(message);
+      }
     } finally {
       setIsSubmitting(false);
     }
@@ -76,9 +83,9 @@ function NewScan() {
     const poll = async () => {
       try {
         const [scanRes, vulnRes, logsRes] = await Promise.all([
-          fetch(`http://localhost:5001/api/scans/${activeScanId}`),
-          fetch(`http://localhost:5001/api/scans/${activeScanId}/vulnerabilities`),
-          fetch(`http://localhost:5001/api/scans/${activeScanId}/logs`)
+          fetch(`${API_BASE_URL}/api/scans/${activeScanId}`),
+          fetch(`${API_BASE_URL}/api/scans/${activeScanId}/vulnerabilities`),
+          fetch(`${API_BASE_URL}/api/scans/${activeScanId}/logs`)
         ]);
 
         const scanData = await scanRes.json();
