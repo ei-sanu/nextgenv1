@@ -1,7 +1,11 @@
 import { Router } from 'express';
 import { startScan, getScans, getScanById, getVulnerabilities, getScanLogs } from '../controllers/scanController';
+import { protect } from '../middleware/authMiddleware';
 
 const router = Router();
+
+// Apply protection to all scan routes
+router.use(protect);
 
 // Route to start a new scan
 router.post('/start', startScan);

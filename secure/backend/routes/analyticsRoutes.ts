@@ -1,9 +1,12 @@
 import { Router } from 'express';
-import { getAnalytics } from '../controllers/analyticsController';
+import { getOverviewStats, getSecurityScoreTrend } from '../controllers/analyticsController';
+import { protect } from '../middleware/authMiddleware';
 
 const router = Router();
 
-// Route to fetch system-wide analytics and risk exposure
-router.get('/', getAnalytics);
+router.use(protect);
+
+router.get('/overview', getOverviewStats);
+router.get('/trends', getSecurityScoreTrend);
 
 export default router;

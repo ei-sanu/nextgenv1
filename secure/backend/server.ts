@@ -3,6 +3,7 @@ import http from 'http';
 import cors from 'cors';
 import helmet from 'helmet';
 import morgan from 'morgan';
+import cookieParser from 'cookie-parser';
 import dotenv from 'dotenv';
 import rateLimit from 'express-rate-limit';
 import mongoSanitize from 'express-mongo-sanitize';
@@ -23,9 +24,13 @@ dotenv.config();
 const app: Application = express();
 const server = http.createServer(app);
 
+// Connect to Database
+connectDB();
+
 // Security Middleware
 app.use(helmet());
-app.use(cors());
+app.use(cors({ origin: true, credentials: true }));
+app.use(cookieParser());
 app.use(express.json({ limit: '10kb' }));
 app.use(morgan('dev')); // Centralized basic logging
 app.use(mongoSanitize());
@@ -63,23 +68,7 @@ app.use((err: any, req: Request, res: Response, next: NextFunction) => {
 setupSocketIO(server);
 
 const PORT = process.env.PORT || 5000;
-const HOST = process.env.HOST || '127.0.0.1';
 
-const bootstrap = async () => {
-  try {
-    await connectDB();
-  } catch (error: unknown) {
-    const message = error instanceof Error ? error.message : String(error);
-    if (process.env.NODE_ENV === 'production') {
-      throw error;
-    }
-    logger.warn(`[Server] MongoDB unavailable in development mode: ${message}`);
-    logger.warn('[Server] API will run, but database-backed endpoints will return errors until DB reconnects.');
-  }
-
-  server.listen(Number(PORT), HOST, () => {
-    logger.info(`[Server] Unified Security Backend running on http://${HOST}:${PORT}`);
-  });
-};
-
-void bootstrap();
+server.listen(PORT, () => {
+  logger.info(`[Server] Unified Security Backend running on port ${PORT}`);
+});

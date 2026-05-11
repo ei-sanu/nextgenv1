@@ -65,6 +65,14 @@ function RootShell({ children }: { children: React.ReactNode }) {
   useEffect(() => {
       const storedUser = localStorage.getItem("user");
       if (storedUser) setUser(JSON.parse(storedUser));
+
+      const handleAuthFailure = () => {
+          handleSetUser(null);
+          localStorage.removeItem("accessToken");
+      };
+
+      window.addEventListener("auth-failure", handleAuthFailure);
+      return () => window.removeEventListener("auth-failure", handleAuthFailure);
   }, []);
 
   const handleSetUser = (u: User) => {
@@ -73,9 +81,15 @@ function RootShell({ children }: { children: React.ReactNode }) {
       else localStorage.removeItem("user");
   };
 
-  const logout = () => {
-      handleSetUser(null);
-      localStorage.removeItem("token");
+  const logout = async () => {
+      try {
+          await fetch("/api/auth/logout", { method: "POST" });
+      } catch (err) {
+          console.error("Logout failed", err);
+      } finally {
+          handleSetUser(null);
+          localStorage.removeItem("accessToken");
+      }
   };
 
   return (

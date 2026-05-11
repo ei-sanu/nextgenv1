@@ -55,7 +55,7 @@ export function AuthModal({ isOpen, onClose, onSuccess }: AuthModalProps) {
           if (res.status === 403) setMode("otp");
           throw new Error(data.message);
       }
-      localStorage.setItem("token", data.token);
+      localStorage.setItem("accessToken", data.accessToken);
       onSuccess(data.user);
       onClose();
     } catch (err: any) {
@@ -77,7 +77,7 @@ export function AuthModal({ isOpen, onClose, onSuccess }: AuthModalProps) {
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.message);
-      localStorage.setItem("token", data.token);
+      localStorage.setItem("accessToken", data.accessToken);
       onSuccess(data.user);
       onClose();
     } catch (err: any) {

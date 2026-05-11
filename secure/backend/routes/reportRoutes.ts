@@ -1,9 +1,12 @@
 import { Router } from 'express';
-import { exportReport } from '../controllers/reportController';
+import { generatePDF, generateJSON } from '../controllers/reportController';
+import { protect } from '../middleware/authMiddleware';
 
 const router = Router();
 
-// Route to export report
-router.get('/:id/export', exportReport);
+router.use(protect);
+
+router.get('/:id/pdf', generatePDF);
+router.get('/:id/json', generateJSON);
 
 export default router;

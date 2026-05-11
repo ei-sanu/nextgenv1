@@ -22,6 +22,7 @@ const UserSchema: Schema = new Schema({
   isVerified: { type: Boolean, default: false },
   otp: { type: String },
   otpExpires: { type: Date },
+  lastActive: { type: Date, default: Date.now },
   createdAt: { type: Date, default: Date.now },
   lastLogin: { type: Date, default: Date.now }
 });
