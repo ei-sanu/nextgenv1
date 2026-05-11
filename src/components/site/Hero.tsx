@@ -28,8 +28,8 @@ export function Hero() {
                 key={i}
                 className="absolute h-px w-px bg-cyber shadow-[0_0_15px_oklch(0.78_0.14_200)] animate-pulse"
                 style={{
-                    top: `${Math.random() * 100}%`,
-                    left: `${Math.random() * 100}%`,
+                    top: `${(i * 137.5) % 100}%`,
+                    left: `${(i * 61.7) % 100}%`,
                     animationDelay: `${i * 0.5}s`,
                     opacity: 0.3
                 }}
