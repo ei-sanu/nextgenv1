@@ -1,10 +1,22 @@
-node_modules/
+# Logs
+*.log
+logs/
+
+# Secrets
 .env
+*.key
+*.pub
+*.pem
+
+# Dependencies
+node_modules/
+bun.lockb
+
+# Build
 dist/
 build/
-.DS_Store
-*.log
 .tanstack/
-bun.lockb
+
+# System
+.DS_Store
 *.rdb
-logs/
