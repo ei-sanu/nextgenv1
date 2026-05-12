@@ -1,7 +1,7 @@
 import { StoryChapter } from "../interactive/StoryChapter";
 import ap from "@/assets/ap.jpg";
-import sentinel from "@/assets/scene-sentinel.jpg";
-import vault from "@/assets/scene-vault.jpg";
+import hackguy from "@/assets/hackguy.jpg";
+import traffic from "@/assets/traffic.jpg";
 
 export function Story() {
   return (
@@ -32,7 +32,7 @@ export function Story() {
         index="02"
         eyebrow="The sentinel"
         align="right"
-        image={sentinel}
+        image={hackguy}
         title={
           <>
             An AI guardian<br />that never blinks.
@@ -50,7 +50,7 @@ export function Story() {
         index="03"
         eyebrow="The vault"
         align="left"
-        image={vault}
+        image={traffic}
         title={
           <>
             Intelligence,<br />crystallised.
