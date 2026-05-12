@@ -2,6 +2,10 @@ import axios from "axios";
 
 // Helper to determine the backend base URL
 const getBaseURL = () => {
+  // Use environment variable if provided (best for Cloudflare/Vercel)
+  const envURL = import.meta.env.VITE_API_BASE_URL;
+  if (envURL) return envURL;
+
   if (typeof window === "undefined") return "/api";
 
   const { hostname } = window.location;
@@ -10,7 +14,8 @@ const getBaseURL = () => {
     return "http://127.0.0.1:5001/api";
   }
 
-  return "/api";
+  // Production Fallback: Use the Oracle VM IP directly
+  return "http://68.233.105.46:5001/api";
 };
 
 const api = axios.create({
