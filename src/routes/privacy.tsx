@@ -13,29 +13,33 @@ function PrivacyPage() {
     {
       title: "Data Encryption",
       icon: Lock,
-      content: "All data ingested by Sentinel is encrypted at rest using AES-256 and in transit via TLS 1.3. Your digital vaults are accessible only by authorized AI agents and verified human operators.",
+      content:
+        "All data ingested by Sentinel is encrypted at rest using AES-256 and in transit via TLS 1.3. Your digital vaults are accessible only by authorized AI agents and verified human operators.",
     },
     {
       title: "Anonymized Intelligence",
       icon: Eye,
-      content: "Threat signatures are shared across the grid anonymously. We prioritize the collective security of the NextGen without compromising individual identity or proprietary source code.",
+      content:
+        "Threat signatures are shared across the grid anonymously. We prioritize the collective security of the NextGen without compromising individual identity or proprietary source code.",
     },
     {
       title: "Zero-Trust Architecture",
       icon: Fingerprint,
-      content: "We operate on a zero-trust basis. Every request, every scan, and every agent activity is cryptographically verified before execution.",
+      content:
+        "We operate on a zero-trust basis. Every request, every scan, and every agent activity is cryptographically verified before execution.",
     },
     {
       title: "Audit Transparency",
       icon: FileText,
-      content: "Our privacy protocols are audited quarterly by third-party security firms. Detailed logs of all data access are available in your Audit console.",
+      content:
+        "Our privacy protocols are audited quarterly by third-party security firms. Detailed logs of all data access are available in your Audit console.",
     },
   ];
 
   return (
     <main className="relative min-h-screen overflow-hidden bg-black pt-32 pb-20">
       <Atmosphere />
-      
+
       <div className="relative z-10 mx-auto max-w-5xl px-6">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -50,11 +54,13 @@ function PrivacyPage() {
             </span>
           </div>
           <h1 className="font-display text-5xl md:text-7xl font-bold tracking-tight text-white mb-6">
-            Privacy as a<br />Foundation.
+            Privacy as a<br />
+            Foundation.
           </h1>
           <p className="text-white/50 max-w-2xl mx-auto text-lg">
-            Sentinel is built on the principle that absolute security shouldn't cost you your privacy. 
-            We protect your systems while keeping your data under your control.
+            Sentinel is built on the principle that absolute security shouldn't
+            cost you your privacy. We protect your systems while keeping your
+            data under your control.
           </p>
         </motion.div>
 
@@ -89,8 +95,13 @@ function PrivacyPage() {
           transition={{ delay: 0.8 }}
           className="mt-20 p-8 rounded-3xl border border-white/5 bg-white/5 backdrop-blur-sm text-center"
         >
-          <p className="text-white/30 text-xs uppercase tracking-[0.3em] mb-4">Last Updated: May 12, 2026</p>
-          <button className="text-cyber font-bold tracking-widest text-[11px] uppercase hover:underline" data-magnetic="true">
+          <p className="text-white/30 text-xs uppercase tracking-[0.3em] mb-4">
+            Last Updated: May 12, 2026
+          </p>
+          <button
+            className="text-cyber font-bold tracking-widest text-[11px] uppercase hover:underline"
+            data-magnetic="true"
+          >
             Download Full Privacy Framework (PDF)
           </button>
         </motion.div>

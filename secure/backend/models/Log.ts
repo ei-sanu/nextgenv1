@@ -1,4 +1,4 @@
-import mongoose, { Schema, Document } from 'mongoose';
+import mongoose, { Schema, Document } from "mongoose";
 
 export interface ILog extends Document {
   level: string;
@@ -11,7 +11,7 @@ const LogSchema: Schema = new Schema({
   level: { type: String, required: true },
   message: { type: String, required: true },
   meta: { type: Schema.Types.Mixed },
-  timestamp: { type: Date, default: Date.now }
+  timestamp: { type: Date, default: Date.now },
 });
 
-export default mongoose.model<ILog>('Log', LogSchema);
+export default mongoose.model<ILog>("Log", LogSchema);

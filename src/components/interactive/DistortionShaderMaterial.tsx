@@ -2,6 +2,7 @@
 
 import * as THREE from "three";
 import { shaderMaterial } from "@react-three/drei";
+import { ThreeElement } from "@react-three/fiber";
 
 export const FluidDistortionMaterialImpl = shaderMaterial(
   {
@@ -112,13 +113,19 @@ export const FluidDistortionMaterialImpl = shaderMaterial(
       
       gl_FragColor = texColor + vec4(glowColor, 0.0);
     }
-  `
+  `,
 );
+
+declare module "@react-three/fiber" {
+  interface ThreeElements {
+    fluidDistortionMaterial: ThreeElement<typeof FluidDistortionMaterialImpl>;
+  }
+}
 
 declare global {
   namespace JSX {
     interface IntrinsicElements {
-      fluidDistortionMaterial: any;
+      fluidDistortionMaterial: ThreeElement<typeof FluidDistortionMaterialImpl>;
     }
   }
 }

@@ -1,9 +1,21 @@
 "use client";
 
-import { motion, useMotionValue, useSpring, useTransform, useMotionTemplate } from "framer-motion";
+import {
+  motion,
+  useMotionValue,
+  useSpring,
+  useTransform,
+  useMotionTemplate,
+} from "framer-motion";
 import React, { useRef, ReactNode } from "react";
 
-export function GlassCard({ children, className = "" }: { children: ReactNode; className?: string }) {
+export function GlassCard({
+  children,
+  className = "",
+}: {
+  children: ReactNode;
+  className?: string;
+}) {
   const ref = useRef<HTMLDivElement>(null);
 
   const x = useMotionValue(0);
@@ -60,7 +72,10 @@ export function GlassCard({ children, className = "" }: { children: ReactNode; c
         style={{ background: backgroundGlow }}
       />
       <div className="absolute inset-0 noise opacity-20 pointer-events-none z-0" />
-      <div className="relative z-10 p-6 sm:p-8" style={{ transform: "translateZ(30px)" }}>
+      <div
+        className="relative z-10 p-6 sm:p-8"
+        style={{ transform: "translateZ(30px)" }}
+      >
         {children}
       </div>
     </motion.div>

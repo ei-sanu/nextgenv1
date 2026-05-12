@@ -13,7 +13,9 @@ export function Story() {
         image={ap}
         title={
           <>
-            Stand above<br />the storm.
+            Stand above
+            <br />
+            the storm.
           </>
         }
         body="Aegis operates from a serene vantage point — continuously scanning your web, network and DNS surface so threats are seen long before they land."
@@ -35,7 +37,9 @@ export function Story() {
         image={hackguy}
         title={
           <>
-            An AI guardian<br />that never blinks.
+            An AI guardian
+            <br />
+            that never blinks.
           </>
         }
         body="Autonomous agents triage findings, score CVSS impact and draft remediation pull-requests — your team approves, Aegis ships."
@@ -53,7 +57,9 @@ export function Story() {
         image={traffic}
         title={
           <>
-            Intelligence,<br />crystallised.
+            Intelligence,
+            <br />
+            crystallised.
           </>
         }
         body="Every scan, signal and signature lives in a luminous archive — instantly searchable, fully replayable, ready for audit."

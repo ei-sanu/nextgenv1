@@ -1,27 +1,35 @@
 #!/bin/bash
-echo "Setting up Secure Unified Cybersecurity Backend..."
+# setup.sh - App specific setup (Run as standard user 'ubuntu')
 
-# Check if Node is installed
-if ! command -v node &> /dev/null
-then
-    echo "Node.js is not installed. Please install Node.js v20+"
-    exit 1
-fi
+set -e
 
-echo "Installing npm dependencies..."
-npm install
+echo "Setting up Sentinel Security Application..."
 
-echo "Checking if .env exists..."
-if [ ! -f .env ]; then
-    echo "Creating .env from .env.example..."
-    cp .env.example .env
-fi
+# Navigate to secure folder
+cd "$(dirname "$0")/.."
 
-echo "Creating log and report directories..."
-mkdir -p logs reports_output
+# Install NPM packages
+echo "Installing Node modules..."
+npm ci
 
+# Build TypeScript
 echo "Building TypeScript code..."
 npm run build
 
-echo "Setup complete! Make sure Redis and MongoDB are running."
-echo "Run 'npm run dev' to start the server and 'npm run worker' in another terminal."
+# Create Logs directory
+mkdir -p logs
+
+# Link Nginx config
+echo "Configuring Nginx..."
+sudo ln -sf $(pwd)/nginx/secure-scanner.conf /etc/nginx/sites-available/secure-scanner.conf
+sudo ln -sf /etc/nginx/sites-available/secure-scanner.conf /etc/nginx/sites-enabled/
+sudo rm -f /etc/nginx/sites-enabled/default
+sudo nginx -t
+sudo systemctl restart nginx
+
+# Setup PM2 Startup script
+echo "Configuring PM2 to start on boot..."
+pm2 startup systemd -u ubuntu --hp /home/ubuntu
+pm2 save
+
+echo "Setup complete! Run start.sh to launch the application."

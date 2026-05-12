@@ -1,12 +1,12 @@
-import Log from '../../backend/models/Log';
-import { emitEvent } from '../../sockets';
+import Log from "../../backend/models/Log";
+import { emitEvent } from "../../sockets";
 
-type ScanLogLevel = 'info' | 'warn' | 'error' | 'debug';
+type ScanLogLevel = "info" | "warn" | "error" | "debug";
 
 const randomBinaryWord = (length = 8): string => {
-  let bits = '';
+  let bits = "";
   for (let i = 0; i < length; i++) {
-    bits += Math.random() > 0.5 ? '1' : '0';
+    bits += Math.random() > 0.5 ? "1" : "0";
   }
   return bits;
 };
@@ -19,22 +19,22 @@ export const logScanEvent = async (
   scanId: string,
   level: ScanLogLevel,
   message: string,
-  meta: Record<string, unknown> = {}
+  meta: Record<string, unknown> = {},
 ) => {
   const payload = {
     scanId,
     level,
     message,
     meta,
-    timestamp: new Date().toISOString()
+    timestamp: new Date().toISOString(),
   };
 
   await Log.create({
     level,
     message,
     meta: { scanId, ...meta },
-    timestamp: new Date()
+    timestamp: new Date(),
   });
 
-  emitEvent('scan_log', payload);
+  emitEvent("scan_log", payload);
 };

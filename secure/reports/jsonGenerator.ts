@@ -1,15 +1,15 @@
-import fs from 'fs';
-import path from 'path';
-import Scan from '../backend/models/Scan';
-import Vulnerability from '../backend/models/Vulnerability';
+import fs from "fs";
+import path from "path";
+import Scan from "../backend/models/Scan";
+import Vulnerability from "../backend/models/Vulnerability";
 
 export const generateJSONReport = async (scanId: string): Promise<string> => {
   const scan = await Scan.findById(scanId);
-  if (!scan) throw new Error('Scan not found');
+  if (!scan) throw new Error("Scan not found");
 
   const vulnerabilities = await Vulnerability.find({ scanId });
 
-  const reportsDir = path.join(__dirname, '../../reports_output');
+  const reportsDir = path.join(__dirname, "../../reports_output");
   if (!fs.existsSync(reportsDir)) {
     fs.mkdirSync(reportsDir, { recursive: true });
   }
@@ -24,9 +24,9 @@ export const generateJSONReport = async (scanId: string): Promise<string> => {
       startedAt: scan.startedAt,
       completedAt: scan.completedAt,
       progress: scan.progress,
-      summary: scan.resultsSummary
+      summary: scan.resultsSummary,
     },
-    vulnerabilities: vulnerabilities.map(v => ({
+    vulnerabilities: vulnerabilities.map((v) => ({
       title: v.title,
       description: v.description,
       severity: v.severity,
@@ -35,8 +35,8 @@ export const generateJSONReport = async (scanId: string): Promise<string> => {
       evidence: v.evidence,
       remediation: v.remediation,
       cve: v.cve,
-      discoveredAt: v.discoveredAt
-    }))
+      discoveredAt: v.discoveredAt,
+    })),
   };
 
   return new Promise((resolve, reject) => {

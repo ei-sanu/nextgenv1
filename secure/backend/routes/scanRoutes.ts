@@ -1,6 +1,12 @@
-import { Router } from 'express';
-import { startScan, getScans, getScanById, getVulnerabilities, getScanLogs } from '../controllers/scanController';
-import { protect } from '../middleware/authMiddleware';
+import { Router } from "express";
+import {
+  startScan,
+  getScans,
+  getScanById,
+  getVulnerabilities,
+  getScanLogs,
+} from "../controllers/scanController";
+import { protect } from "../middleware/authMiddleware";
 
 const router = Router();
 
@@ -8,16 +14,16 @@ const router = Router();
 router.use(protect);
 
 // Route to start a new scan
-router.post('/start', startScan);
+router.post("/start", startScan);
 
 // Route to get all scans (history)
-router.get('/', getScans);
+router.get("/", getScans);
 
 // Route to get a specific scan by ID
-router.get('/:id', getScanById);
+router.get("/:id", getScanById);
 
 // Route to get vulnerabilities for a specific scan
-router.get('/:id/vulnerabilities', getVulnerabilities);
-router.get('/:id/logs', getScanLogs);
+router.get("/:id/vulnerabilities", getVulnerabilities);
+router.get("/:id/logs", getScanLogs);
 
 export default router;

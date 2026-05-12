@@ -1,13 +1,14 @@
-import { Job, Worker } from 'bullmq';
-import dotenv from 'dotenv';
-import net from 'net';
-import processScanJob from './processor';
+import { Job, Worker } from "bullmq";
+import dotenv from "dotenv";
+import net from "net";
+import processScanJob from "./processor";
 
 dotenv.config();
 
 const redisOptions = {
-  host: process.env.REDIS_HOST || 'localhost',
-  port: parseInt(process.env.REDIS_PORT || '6379'),
+  host: process.env.REDIS_HOST || "localhost",
+  port: parseInt(process.env.REDIS_PORT || "6379"),
+  password: process.env.REDIS_PASSWORD || undefined,
 };
 
 let scanWorker: Worker | null = null;
@@ -19,20 +20,20 @@ const isRedisAvailable = async () => {
     const port = redisOptions.port as number;
     let finished = false;
 
-    socket.setTimeout(500);
-    socket.once('connect', () => {
+    socket.setTimeout(1500);
+    socket.once("connect", () => {
       finished = true;
       socket.destroy();
       resolve(true);
     });
-    socket.once('timeout', () => {
+    socket.once("timeout", () => {
       if (!finished) {
         finished = true;
         socket.destroy();
         resolve(false);
       }
     });
-    socket.once('error', () => {
+    socket.once("error", () => {
       if (!finished) {
         finished = true;
         socket.destroy();
@@ -47,23 +48,39 @@ const isRedisAvailable = async () => {
   try {
     const ok = await isRedisAvailable();
     if (ok) {
-      scanWorker = new Worker('scanQueue', async (job: Job) => {
-        return await processScanJob(job.data);
-      }, { connection: redisOptions });
+      scanWorker = new Worker(
+        "scanQueue",
+        async (job: Job) => {
+          return await processScanJob(job.data);
+        },
+        { 
+          connection: redisOptions,
+          concurrency: parseInt(process.env.SCAN_WORKER_CONCURRENCY || "10"), // Critical: Throttle execution to 10 max
+          limiter: {
+            max: 50, // max 50 jobs
+            duration: 1000 // per 1 second
+          }
+        },
+      );
 
-      scanWorker.on('completed', (job) => {
+      scanWorker.on("completed", (job) => {
         console.log(`[Worker] Job ${job.id} has completed!`);
       });
 
-      scanWorker.on('failed', (job, err) => {
+      scanWorker.on("failed", (job, err) => {
         console.log(`[Worker] Job ${job?.id} has failed with ${err.message}`);
       });
-      console.log('[Worker] scanWorker started and connected to Redis');
+      console.log("[Worker] scanWorker started and connected to Redis with a concurrency limit of 10");
     } else {
-      console.warn('[Worker] Redis not reachable, running without bullmq worker. Falling back to in-process processing.');
+      console.warn(
+        "[Worker] Redis not reachable, running without bullmq worker. Falling back to in-process processing.",
+      );
     }
   } catch (err: any) {
-    console.warn('[Worker] Error checking Redis reachability, running without bullmq worker', err?.message || err);
+    console.warn(
+      "[Worker] Error checking Redis reachability, running without bullmq worker",
+      err?.message || err,
+    );
   }
 })();
 

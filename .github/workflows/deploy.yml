@@ -1,0 +1,29 @@
+name: Deploy Backend to Oracle VM
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'secure/**'
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Deploy to Oracle VM via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.ORACLE_VM_IP }}
+          username: ubuntu
+          key: ${{ secrets.ORACLE_VM_SSH_KEY }}
+          script: |
+            cd ~/nextgen/secure
+            git pull origin main
+            
+            # Use the deployment script
+            chmod +x ./scripts/deploy.sh
+            ./scripts/deploy.sh

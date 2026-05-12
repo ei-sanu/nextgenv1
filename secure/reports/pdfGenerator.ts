@@ -1,16 +1,16 @@
-import PDFDocument from 'pdfkit';
-import fs from 'fs';
-import path from 'path';
-import Scan from '../backend/models/Scan';
-import Vulnerability from '../backend/models/Vulnerability';
+import PDFDocument from "pdfkit";
+import fs from "fs";
+import path from "path";
+import Scan from "../backend/models/Scan";
+import Vulnerability from "../backend/models/Vulnerability";
 
 export const generatePDFReport = async (scanId: string): Promise<string> => {
   const scan = await Scan.findById(scanId);
-  if (!scan) throw new Error('Scan not found');
+  if (!scan) throw new Error("Scan not found");
 
   const vulnerabilities = await Vulnerability.find({ scanId });
 
-  const reportsDir = path.join(__dirname, '../../reports_output');
+  const reportsDir = path.join(__dirname, "../../reports_output");
   if (!fs.existsSync(reportsDir)) {
     fs.mkdirSync(reportsDir, { recursive: true });
   }
@@ -23,7 +23,7 @@ export const generatePDFReport = async (scanId: string): Promise<string> => {
     doc.pipe(stream);
 
     // Title
-    doc.fontSize(24).text('Cybersecurity Scan Report', { align: 'center' });
+    doc.fontSize(24).text("Cybersecurity Scan Report", { align: "center" });
     doc.moveDown();
 
     // Scan Details
@@ -34,7 +34,7 @@ export const generatePDFReport = async (scanId: string): Promise<string> => {
     doc.moveDown(2);
 
     // Summary
-    doc.fontSize(18).text('Summary');
+    doc.fontSize(18).text("Summary");
     doc.fontSize(12).text(`Total Vulnerabilities: ${vulnerabilities.length}`);
     if (scan.resultsSummary && scan.resultsSummary.severityBreakdown) {
       const breakdown = scan.resultsSummary.severityBreakdown;
@@ -46,11 +46,13 @@ export const generatePDFReport = async (scanId: string): Promise<string> => {
     doc.moveDown(2);
 
     // Vulnerabilities
-    doc.fontSize(18).text('Detailed Findings');
+    doc.fontSize(18).text("Detailed Findings");
     doc.moveDown();
 
     vulnerabilities.forEach((vuln, index) => {
-      doc.fontSize(14).text(`${index + 1}. ${vuln.title} [${vuln.severity.toUpperCase()}]`);
+      doc
+        .fontSize(14)
+        .text(`${index + 1}. ${vuln.title} [${vuln.severity.toUpperCase()}]`);
       doc.fontSize(10).text(`Description: ${vuln.description}`);
       doc.text(`CVSS Score: ${vuln.cvssScore}`);
       doc.text(`SAVE Score: ${vuln.saveScore}`);
@@ -62,7 +64,7 @@ export const generatePDFReport = async (scanId: string): Promise<string> => {
 
     doc.end();
 
-    stream.on('finish', () => resolve(filePath));
-    stream.on('error', (err) => reject(err));
+    stream.on("finish", () => resolve(filePath));
+    stream.on("error", (err) => reject(err));
   });
 };

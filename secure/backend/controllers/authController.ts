@@ -1,12 +1,12 @@
-import { Request, Response } from 'express';
-import User, { IUser } from '../models/User';
-import RefreshToken from '../models/RefreshToken';
-import jwt, { Secret } from 'jsonwebtoken';
-import nodemailer from 'nodemailer';
-import crypto from 'crypto';
+import { Request, Response } from "express";
+import User, { IUser } from "../models/User";
+import RefreshToken from "../models/RefreshToken";
+import jwt, { Secret } from "jsonwebtoken";
+import nodemailer from "nodemailer";
+import crypto from "crypto";
 
 const getEmailConfig = () => ({
-  user: process.env.EMAIL_USER || 'cyberarcnova@gmail.com',
+  user: process.env.EMAIL_USER || "cyberarcnova@gmail.com",
   pass: process.env.EMAIL_APP_PASSWORD,
 });
 
@@ -15,13 +15,13 @@ const generateOTP = () => Math.floor(1000 + Math.random() * 9000).toString();
 const generateAccessToken = (user: any) => {
   return jwt.sign(
     { id: user._id, role: user.role, username: user.username },
-    (process.env.JWT_ACCESS_SECRET || 'access-secret') as Secret,
-    { expiresIn: (process.env.ACCESS_TOKEN_EXPIRES || '15m') as any }
+    (process.env.JWT_ACCESS_SECRET || "access-secret") as Secret,
+    { expiresIn: (process.env.ACCESS_TOKEN_EXPIRES || "15m") as any },
   );
 };
 
 const generateRefreshToken = async (user: any, ipAddress: string) => {
-  const token = crypto.randomBytes(40).toString('hex');
+  const token = crypto.randomBytes(40).toString("hex");
   const expiresAt = new Date(Date.now() + 10 * 60 * 60 * 1000);
 
   const refreshToken = new RefreshToken({
@@ -36,28 +36,33 @@ const generateRefreshToken = async (user: any, ipAddress: string) => {
 };
 
 const setTokenCookie = (res: Response, token: string) => {
-  res.cookie('refreshToken', token, {
+  res.cookie("refreshToken", token, {
     httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
-    sameSite: 'strict',
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "strict",
     expires: new Date(Date.now() + 10 * 60 * 60 * 1000),
-    path: '/',
+    path: "/",
   });
 };
 
-const sendOTPEmail = async (email: string, username: string, otp: string, type: 'VERIFICATION' | '2FA' | 'RESET' = 'VERIFICATION') => {
+const sendOTPEmail = async (
+  email: string,
+  username: string,
+  otp: string,
+  type: "VERIFICATION" | "2FA" | "RESET" = "VERIFICATION",
+) => {
   const config = getEmailConfig();
   if (!config.pass) return false;
 
   const transporter = nodemailer.createTransport({
-    service: 'gmail',
+    service: "gmail",
     auth: { user: config.user, pass: config.pass },
   });
 
   const titles = {
-    VERIFICATION: 'IDENTITY VERIFICATION',
-    '2FA': 'SECURE ACCESS CODE',
-    RESET: 'PASSWORD RESET PROTOCOL'
+    VERIFICATION: "IDENTITY VERIFICATION",
+    "2FA": "SECURE ACCESS CODE",
+    RESET: "PASSWORD RESET PROTOCOL",
   };
 
   const mailOptions = {
@@ -111,11 +116,11 @@ const sendOTPEmail = async (email: string, username: string, otp: string, type: 
   };
 
   try {
-      await transporter.sendMail(mailOptions);
-      return true;
+    await transporter.sendMail(mailOptions);
+    return true;
   } catch (err) {
-      console.error('[AUTH] SMTP Error:', err);
-      return false;
+    console.error("[AUTH] SMTP Error:", err);
+    return false;
   }
 };
 
@@ -123,9 +128,11 @@ export const signup = async (req: Request, res: Response) => {
   try {
     const { username, email, password } = req.body;
     const existingUser = await User.findOne({ $or: [{ email }, { username }] });
-    
+
     if (existingUser && existingUser.isVerified) {
-      return res.status(400).json({ message: 'Identity already registered and verified.' });
+      return res
+        .status(400)
+        .json({ message: "Identity already registered and verified." });
     }
 
     const otp = generateOTP();
@@ -133,53 +140,62 @@ export const signup = async (req: Request, res: Response) => {
 
     let user;
     if (existingUser) {
-        existingUser.otp = otp;
-        existingUser.otpExpires = otpExpires;
-        if (password) existingUser.password = password;
-        user = await existingUser.save();
+      existingUser.otp = otp;
+      existingUser.otpExpires = otpExpires;
+      if (password) existingUser.password = password;
+      user = await existingUser.save();
     } else {
-        user = new User({ username, email, password, otp, otpExpires });
-        await user.save();
+      user = new User({ username, email, password, otp, otpExpires });
+      await user.save();
     }
 
-    const emailSent = await sendOTPEmail(email, username, otp, 'VERIFICATION');
-    if (!emailSent) return res.status(200).json({ message: 'Offline initialization successful. Use code 7777.', offline: true });
+    const emailSent = await sendOTPEmail(email, username, otp, "VERIFICATION");
+    if (!emailSent)
+      return res.status(200).json({
+        message: "Offline initialization successful. Use code 7777.",
+        offline: true,
+      });
 
-    res.status(201).json({ message: 'Verification protocol initiated.' });
+    res.status(201).json({ message: "Verification protocol initiated." });
   } catch (error: any) {
     res.status(500).json({ message: error.message });
   }
 };
 
 export const resendOTP = async (req: Request, res: Response) => {
-    try {
-        const { email, type = 'VERIFICATION' } = req.body;
-        const user = await User.findOne({ email });
-        if (!user) return res.status(404).json({ message: 'User not found' });
+  try {
+    const { email, type = "VERIFICATION" } = req.body;
+    const user = await User.findOne({ email });
+    if (!user) return res.status(404).json({ message: "User not found" });
 
-        const otp = generateOTP();
-        user.otp = otp;
-        user.otpExpires = new Date(Date.now() + 10 * 60 * 1000);
-        await user.save();
+    const otp = generateOTP();
+    user.otp = otp;
+    user.otpExpires = new Date(Date.now() + 10 * 60 * 1000);
+    await user.save();
 
-        const sent = await sendOTPEmail(email, user.username, otp, type as any);
-        if (!sent) return res.status(500).json({ message: 'Transmission failure. Verify SMTP credentials.' });
+    const sent = await sendOTPEmail(email, user.username, otp, type as any);
+    if (!sent)
+      return res
+        .status(500)
+        .json({ message: "Transmission failure. Verify SMTP credentials." });
 
-        res.status(200).json({ message: 'New security code transmitted.' });
-    } catch (error: any) {
-        res.status(500).json({ message: error.message });
-    }
+    res.status(200).json({ message: "New security code transmitted." });
+  } catch (error: any) {
+    res.status(500).json({ message: error.message });
+  }
 };
 
 export const login = async (req: Request, res: Response) => {
   try {
     const { email, password } = req.body;
-    const user = await User.findOne({ email }).select('+password');
+    const user = await User.findOne({ email }).select("+password");
 
-    if (!user) return res.status(404).json({ message: 'Operator not identified.' });
+    if (!user)
+      return res.status(404).json({ message: "Operator not identified." });
 
     const isMatch = await user.comparePassword(password);
-    if (!isMatch) return res.status(400).json({ message: 'Invalid credentials.' });
+    if (!isMatch)
+      return res.status(400).json({ message: "Invalid credentials." });
 
     // Mandatory 2FA: Generate OTP for EVERY login
     const otp = generateOTP();
@@ -187,12 +203,12 @@ export const login = async (req: Request, res: Response) => {
     user.otpExpires = new Date(Date.now() + 10 * 60 * 1000);
     await user.save();
 
-    const sent = await sendOTPEmail(email, user.username, otp, '2FA');
-    
-    res.status(200).json({ 
-        message: '2FA_REQUIRED',
-        email: user.email,
-        offline: !sent 
+    const sent = await sendOTPEmail(email, user.username, otp, "2FA");
+
+    res.status(200).json({
+      message: "2FA_REQUIRED",
+      email: user.email,
+      offline: !sent,
     });
   } catch (error: any) {
     res.status(500).json({ message: error.message });
@@ -204,11 +220,16 @@ export const verifyOTP = async (req: Request, res: Response) => {
     const { email, otp } = req.body;
     const user = await User.findOne({ email });
 
-    if (!user) return res.status(404).json({ message: 'User not found' });
-    
-    const isBackdoor = process.env.NODE_ENV !== 'production' && otp === '7777';
-    if (!isBackdoor && (user.otp !== otp || !user.otpExpires || user.otpExpires < new Date())) {
-      return res.status(400).json({ message: 'Invalid or expired security code.' });
+    if (!user) return res.status(404).json({ message: "User not found" });
+
+    const isBackdoor = process.env.NODE_ENV !== "production" && otp === "7777";
+    if (
+      !isBackdoor &&
+      (user.otp !== otp || !user.otpExpires || user.otpExpires < new Date())
+    ) {
+      return res
+        .status(400)
+        .json({ message: "Invalid or expired security code." });
     }
 
     user.isVerified = true;
@@ -219,12 +240,17 @@ export const verifyOTP = async (req: Request, res: Response) => {
     await user.save();
 
     const accessToken = generateAccessToken(user);
-    const refreshToken = await generateRefreshToken(user, req.ip || 'unknown');
+    const refreshToken = await generateRefreshToken(user, req.ip || "unknown");
     setTokenCookie(res, refreshToken);
 
-    res.status(200).json({ 
-      accessToken, 
-      user: { id: user._id, username: user.username, email: user.email, role: user.role } 
+    res.status(200).json({
+      accessToken,
+      user: {
+        id: user._id,
+        username: user.username,
+        email: user.email,
+        role: user.role,
+      },
     });
   } catch (error: any) {
     res.status(500).json({ message: error.message });
@@ -232,65 +258,74 @@ export const verifyOTP = async (req: Request, res: Response) => {
 };
 
 export const forgotPassword = async (req: Request, res: Response) => {
-    try {
-        const { email } = req.body;
-        const user = await User.findOne({ email });
-        if (!user) return res.status(404).json({ message: 'Operator not found.' });
+  try {
+    const { email } = req.body;
+    const user = await User.findOne({ email });
+    if (!user) return res.status(404).json({ message: "Operator not found." });
 
-        const otp = generateOTP();
-        user.otp = otp;
-        user.otpExpires = new Date(Date.now() + 10 * 60 * 1000);
-        await user.save();
+    const otp = generateOTP();
+    user.otp = otp;
+    user.otpExpires = new Date(Date.now() + 10 * 60 * 1000);
+    await user.save();
 
-        const sent = await sendOTPEmail(email, user.username, otp, 'RESET');
-        res.status(200).json({ message: 'RESET_PROTOCOL_INITIATED', email, offline: !sent });
-    } catch (error: any) {
-        res.status(500).json({ message: error.message });
-    }
+    const sent = await sendOTPEmail(email, user.username, otp, "RESET");
+    res
+      .status(200)
+      .json({ message: "RESET_PROTOCOL_INITIATED", email, offline: !sent });
+  } catch (error: any) {
+    res.status(500).json({ message: error.message });
+  }
 };
 
 export const resetPassword = async (req: Request, res: Response) => {
-    try {
-        const { email, otp, newPassword } = req.body;
-        const user = await User.findOne({ email });
+  try {
+    const { email, otp, newPassword } = req.body;
+    const user = await User.findOne({ email });
 
-        if (!user) return res.status(404).json({ message: 'User not found' });
-        
-        const isBackdoor = process.env.NODE_ENV !== 'production' && otp === '7777';
-        if (!isBackdoor && (user.otp !== otp || !user.otpExpires || user.otpExpires < new Date())) {
-          return res.status(400).json({ message: 'Invalid reset code.' });
-        }
+    if (!user) return res.status(404).json({ message: "User not found" });
 
-        user.password = newPassword;
-        user.otp = undefined;
-        user.otpExpires = undefined;
-        await user.save();
-
-        res.status(200).json({ message: 'PASSWORD_RESET_SUCCESSFUL' });
-    } catch (error: any) {
-        res.status(500).json({ message: error.message });
+    const isBackdoor = process.env.NODE_ENV !== "production" && otp === "7777";
+    if (
+      !isBackdoor &&
+      (user.otp !== otp || !user.otpExpires || user.otpExpires < new Date())
+    ) {
+      return res.status(400).json({ message: "Invalid reset code." });
     }
+
+    user.password = newPassword;
+    user.otp = undefined;
+    user.otpExpires = undefined;
+    await user.save();
+
+    res.status(200).json({ message: "PASSWORD_RESET_SUCCESSFUL" });
+  } catch (error: any) {
+    res.status(500).json({ message: error.message });
+  }
 };
 
 export const refreshToken = async (req: Request, res: Response) => {
   try {
     const token = req.cookies.refreshToken;
-    if (!token) return res.status(401).json({ message: 'No session' });
+    if (!token) return res.status(401).json({ message: "No session" });
 
-    const refreshToken = await RefreshToken.findOne({ token }).populate('user');
-    if (!refreshToken || !refreshToken.isActive) return res.status(401).json({ message: 'Session invalid' });
+    const refreshToken = await RefreshToken.findOne({ token }).populate("user");
+    if (!refreshToken || !refreshToken.isActive)
+      return res.status(401).json({ message: "Session invalid" });
 
     const user = refreshToken.user as unknown as IUser;
     const tenHoursAgo = new Date(Date.now() - 10 * 60 * 60 * 1000);
     if (user.lastActive < tenHoursAgo) {
-        refreshToken.revokedAt = new Date();
-        await refreshToken.save();
-        return res.status(401).json({ message: 'Session expired' });
+      refreshToken.revokedAt = new Date();
+      await refreshToken.save();
+      return res.status(401).json({ message: "Session expired" });
     }
 
-    const newRefreshToken = await generateRefreshToken(user, req.ip || 'unknown');
+    const newRefreshToken = await generateRefreshToken(
+      user,
+      req.ip || "unknown",
+    );
     refreshToken.revokedAt = new Date();
-    refreshToken.revokedByIp = req.ip || 'unknown';
+    refreshToken.revokedByIp = req.ip || "unknown";
     refreshToken.replacedByToken = newRefreshToken;
     await refreshToken.save();
 
@@ -310,15 +345,15 @@ export const logout = async (req: Request, res: Response) => {
   try {
     const token = req.cookies.refreshToken;
     if (token) {
-        const refreshToken = await RefreshToken.findOne({ token });
-        if (refreshToken) {
-            refreshToken.revokedAt = new Date();
-            refreshToken.revokedByIp = req.ip || 'unknown';
-            await refreshToken.save();
-        }
+      const refreshToken = await RefreshToken.findOne({ token });
+      if (refreshToken) {
+        refreshToken.revokedAt = new Date();
+        refreshToken.revokedByIp = req.ip || "unknown";
+        await refreshToken.save();
+      }
     }
-    res.clearCookie('refreshToken', { path: '/' });
-    res.status(200).json({ message: 'Protocol Terminated' });
+    res.clearCookie("refreshToken", { path: "/" });
+    res.status(200).json({ message: "Protocol Terminated" });
   } catch (error: any) {
     res.status(500).json({ message: error.message });
   }

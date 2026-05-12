@@ -44,7 +44,9 @@ export function Capabilities() {
               · The platform
             </div>
             <h2 className="font-display text-4xl md:text-6xl font-semibold tracking-[-0.03em] text-gradient max-w-2xl leading-[1]">
-              One console.<br />Every attack surface.
+              One console.
+              <br />
+              Every attack surface.
             </h2>
           </div>
           <p className="max-w-md text-sm text-muted-foreground">
@@ -61,7 +63,11 @@ export function Capabilities() {
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-80px" }}
-              transition={{ duration: 0.7, delay: i * 0.06, ease: [0.22, 1, 0.36, 1] }}
+              transition={{
+                duration: 0.7,
+                delay: i * 0.06,
+                ease: [0.22, 1, 0.36, 1],
+              }}
               className="group relative overflow-hidden rounded-2xl glass p-6 transition hover:border-cyber/30"
             >
               <div className="absolute -right-10 -top-10 h-40 w-40 rounded-full bg-cyber/0 blur-3xl transition group-hover:bg-cyber/15" />

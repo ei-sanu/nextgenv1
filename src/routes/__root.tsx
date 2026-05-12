@@ -21,7 +21,7 @@ type User = {
   id: string;
   username: string;
   email: string;
-  role: 'admin' | 'user' | 'analyst';
+  role: "admin" | "user" | "analyst";
 } | null;
 
 const AuthContext = createContext<{
@@ -29,11 +29,11 @@ const AuthContext = createContext<{
   setUser: (user: User) => void;
   openAuth: () => void;
   logout: () => void;
-}>({ 
-  user: null, 
-  setUser: () => {}, 
+}>({
+  user: null,
+  setUser: () => {},
   openAuth: () => {},
-  logout: () => {}
+  logout: () => {},
 });
 
 export const useAuth = () => useContext(AuthContext);
@@ -43,9 +43,12 @@ function NotFoundComponent() {
     <div className="flex min-h-screen items-center justify-center bg-black px-4">
       <div className="max-w-md text-center">
         <h1 className="text-7xl font-bold text-white">404</h1>
-        <h2 className="mt-4 text-xl font-semibold text-white/80">Page not found</h2>
+        <h2 className="mt-4 text-xl font-semibold text-white/80">
+          Page not found
+        </h2>
         <p className="mt-2 text-sm text-white/40 leading-relaxed">
-          The security perimeter you're looking for doesn't exist or has been relocated.
+          The security perimeter you're looking for doesn't exist or has been
+          relocated.
         </p>
         <div className="mt-8">
           <Link
@@ -71,8 +74,8 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
           Protocol Failure
         </h1>
         <p className="mt-2 text-sm text-white/40 leading-relaxed mb-8">
-          Something went wrong with the interface rendering. 
-          The error has been logged for analysis.
+          Something went wrong with the interface rendering. The error has been
+          logged for analysis.
         </p>
         <div className="flex flex-wrap justify-center gap-4">
           <button
@@ -96,60 +99,62 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
   );
 }
 
-export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()({
-  head: () => ({
-    meta: [
-      { charSet: "utf-8" },
-      { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "SENTINEL — Absolute Security" },
-      { name: "description", content: "Advanced Cyber Security System" },
-      { name: "author", content: "Team NextGen" },
-    ],
-    links: [
-      {
-        rel: "stylesheet",
-        href: appCss,
-      },
-    ],
-  }),
-  shellComponent: RootShell,
-  component: RootComponent,
-  notFoundComponent: NotFoundComponent,
-  errorComponent: ErrorComponent,
-});
+export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
+  {
+    head: () => ({
+      meta: [
+        { charSet: "utf-8" },
+        { name: "viewport", content: "width=device-width, initial-scale=1" },
+        { title: "SENTINEL — Absolute Security" },
+        { name: "description", content: "Advanced Cyber Security System" },
+        { name: "author", content: "Team NextGen" },
+      ],
+      links: [
+        {
+          rel: "stylesheet",
+          href: appCss,
+        },
+      ],
+    }),
+    shellComponent: RootShell,
+    component: RootComponent,
+    notFoundComponent: NotFoundComponent,
+    errorComponent: ErrorComponent,
+  },
+);
 
 function RootShell({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User>(null);
   const [isAuthOpen, setIsAuthOpen] = useState(false);
 
   useEffect(() => {
-      const storedUser = localStorage.getItem("user");
-      if (storedUser) setUser(JSON.parse(storedUser));
+    const storedUser = localStorage.getItem("user");
+    if (storedUser) setUser(JSON.parse(storedUser));
 
-      const handleAuthFailure = () => {
-          handleSetUser(null);
-          localStorage.removeItem("accessToken");
-      };
+    const handleAuthFailure = () => {
+      handleSetUser(null);
+      localStorage.removeItem("accessToken");
+    };
 
-      window.addEventListener("auth-failure", handleAuthFailure);
-      return () => window.removeEventListener("auth-failure", handleAuthFailure);
+    window.addEventListener("auth-failure", handleAuthFailure);
+    return () => window.removeEventListener("auth-failure", handleAuthFailure);
   }, []);
 
   const handleSetUser = (u: User) => {
-      setUser(u);
-      if (u) localStorage.setItem("user", JSON.stringify(u));
-      else localStorage.removeItem("user");
+    setUser(u);
+    if (u) localStorage.setItem("user", JSON.stringify(u));
+    else localStorage.removeItem("user");
   };
 
   const logout = async () => {
-      try {
-          await fetch("/api/auth/logout", { method: "POST" });
-      } catch (err) {
-          console.error("Logout failed", err);
-      } finally {
-          handleSetUser(null);
-          localStorage.removeItem("accessToken");
-      }
+    try {
+      await fetch("/api/auth/logout", { method: "POST" });
+    } catch (err) {
+      console.error("Logout failed", err);
+    } finally {
+      handleSetUser(null);
+      localStorage.removeItem("accessToken");
+    }
   };
 
   return (
@@ -158,20 +163,27 @@ function RootShell({ children }: { children: React.ReactNode }) {
         <HeadContent />
       </head>
       <body>
-        <AuthContext.Provider value={{ user, setUser: handleSetUser, openAuth: () => setIsAuthOpen(true), logout }}>
-            <MotionProvider>
-                <GlobalLoaderProvider>
-                    <Navbar />
-                    <AuthModal 
-                        isOpen={isAuthOpen} 
-                        onClose={() => setIsAuthOpen(false)} 
-                        onSuccess={handleSetUser} 
-                    />
-                    <CursorSystem />
-                    <DistortionCanvas />
-                    {children}
-                </GlobalLoaderProvider>
-            </MotionProvider>
+        <AuthContext.Provider
+          value={{
+            user,
+            setUser: handleSetUser,
+            openAuth: () => setIsAuthOpen(true),
+            logout,
+          }}
+        >
+          <MotionProvider>
+            <GlobalLoaderProvider>
+              <Navbar />
+              <AuthModal
+                isOpen={isAuthOpen}
+                onClose={() => setIsAuthOpen(false)}
+                onSuccess={handleSetUser}
+              />
+              <CursorSystem />
+              <DistortionCanvas />
+              {children}
+            </GlobalLoaderProvider>
+          </MotionProvider>
         </AuthContext.Provider>
         <Scripts />
       </body>

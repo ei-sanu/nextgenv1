@@ -31,5 +31,9 @@ export function MotionProvider({ children }: { children: ReactNode }) {
     };
   }, []);
 
-  return <MotionContext.Provider value={{ lenis: null }}>{children}</MotionContext.Provider>;
+  return (
+    <MotionContext.Provider value={{ lenis: null }}>
+      {children}
+    </MotionContext.Provider>
+  );
 }

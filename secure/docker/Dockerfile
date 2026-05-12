@@ -1,24 +1,29 @@
-FROM node:20-alpine
-
-# Install dependencies required for our real scanners (Nmap and Nuclei)
-RUN apk add --no-cache nmap
-
-# Install Nuclei by downloading the binary
-RUN wget https://github.com/projectdiscovery/nuclei/releases/download/v3.1.6/nuclei_3.1.6_linux_amd64.zip -O nuclei.zip && \
-    unzip nuclei.zip -d /usr/local/bin/ && \
-    rm nuclei.zip && \
-    chmod +x /usr/local/bin/nuclei && \
-    nuclei -update-templates
+FROM node:20-alpine AS builder
 
 WORKDIR /app
-
 COPY package*.json ./
-RUN npm install
-
+RUN npm ci
 COPY . .
-
 RUN npm run build
 
-EXPOSE 5000
+FROM node:20-alpine AS production
 
-CMD ["npm", "start"]
+# Install necessary scanner tools for the backend container (Nmap, Nikto, etc.)
+RUN apk add --no-cache nmap nmap-scripts nikto python3
+
+WORKDIR /app
+COPY package*.json ./
+RUN npm ci --only=production
+COPY --from=builder /app/dist ./dist
+COPY --from=builder /app/scripts ./scripts
+COPY --from=builder /app/scanners ./scanners
+COPY --from=builder /app/ecosystem ./ecosystem
+
+ENV NODE_ENV=production
+ENV PORT=5001
+
+EXPOSE 5001
+
+# Start the application using PM2 (for clustering within the container, though docker-compose might handle scaling)
+RUN npm install pm2 -g
+CMD ["pm2-runtime", "ecosystem/ecosystem.config.js"]

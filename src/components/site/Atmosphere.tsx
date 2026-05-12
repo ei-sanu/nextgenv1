@@ -12,11 +12,12 @@ export function Atmosphere() {
       <div className="absolute inset-0 bg-[#020202]" />
 
       {/* 2. Primary Ambient Light Leak (From top) */}
-      <div 
+      <div
         className="absolute inset-x-0 -top-[10%] h-[70%] opacity-50 mix-blend-screen"
         style={{
-          background: "radial-gradient(ellipse 100% 80% at 50% 0%, oklch(0.32 0.05 255) 0%, transparent 100%)",
-          filter: "blur(60px)"
+          background:
+            "radial-gradient(ellipse 100% 80% at 50% 0%, oklch(0.32 0.05 255) 0%, transparent 100%)",
+          filter: "blur(60px)",
         }}
       />
 
@@ -24,20 +25,23 @@ export function Atmosphere() {
       <div className="absolute inset-0 bg-aurora animate-drift opacity-30" />
 
       {/* 4. The Grid Grid System - Seamlessly masked */}
-      <div 
+      <div
         className="absolute inset-0 grid-bg"
         style={{
           opacity: 0.45,
-          maskImage: "radial-gradient(ellipse 80% 50% at 50% 50%, black 10%, transparent 90%)",
-          WebkitMaskImage: "radial-gradient(ellipse 80% 50% at 50% 50%, black 10%, transparent 90%)",
+          maskImage:
+            "radial-gradient(ellipse 80% 50% at 50% 50%, black 10%, transparent 90%)",
+          WebkitMaskImage:
+            "radial-gradient(ellipse 80% 50% at 50% 50%, black 10%, transparent 90%)",
         }}
       />
 
       {/* 5. Atmospheric Fog - Deep bottom layer */}
-      <div 
+      <div
         className="absolute inset-x-0 bottom-0 h-[80%] opacity-80 mix-blend-multiply"
         style={{
-            background: "linear-gradient(to top, oklch(0.12 0.02 255) 0%, transparent 100%)"
+          background:
+            "linear-gradient(to top, oklch(0.12 0.02 255) 0%, transparent 100%)",
         }}
       />
       <div className="absolute inset-x-0 bottom-0 h-[40%] bg-fog opacity-60" />
@@ -68,10 +72,11 @@ export function Atmosphere() {
 
       {/* 9. Final Unification Layers: Noise & Vignette */}
       <div className="absolute inset-0 noise opacity-[0.04] mix-blend-overlay" />
-      <div 
+      <div
         className="absolute inset-0"
         style={{
-            background: "radial-gradient(circle at center, transparent 30%, rgba(0,0,0,0.6) 100%)"
+          background:
+            "radial-gradient(circle at center, transparent 30%, rgba(0,0,0,0.6) 100%)",
         }}
       />
     </div>
@@ -100,7 +105,7 @@ function Particles() {
             height: d.size,
             boxShadow: "0 0 10px currentColor",
             color: "var(--cyber)",
-            opacity: 0.2
+            opacity: 0.2,
           }}
           animate={{ opacity: [0.1, 0.5, 0.1], y: [0, -20, 0] }}
           transition={{

@@ -9,7 +9,16 @@ import { FluidDistortionMaterialImpl } from "./DistortionShaderMaterial";
 extend({ FluidDistortionMaterial: FluidDistortionMaterialImpl });
 
 function Scene() {
-  const materialRef = useRef<any>(null);
+  const materialRef = useRef<THREE.ShaderMaterial & {
+    uTime: number;
+    uMouse: THREE.Vector2;
+    uPrevMouse: THREE.Vector2;
+    uVelocity: number;
+    uTexture: THREE.Texture | null;
+    uHasTexture: boolean;
+    uResolution: THREE.Vector2;
+    uHoverState: number;
+  }>(null);
   const { viewport, size } = useThree();
 
   const mouse = useRef(new THREE.Vector2(0, 0));
@@ -20,7 +29,7 @@ function Scene() {
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
       const x = e.clientX / window.innerWidth;
-      const y = 1.0 - (e.clientY / window.innerHeight);
+      const y = 1.0 - e.clientY / window.innerHeight;
 
       prevMouse.current.copy(mouse.current);
       mouse.current.set(x, y);
@@ -43,9 +52,12 @@ function Scene() {
       materialRef.current.uMouse = mouse.current;
       materialRef.current.uPrevMouse = prevMouse.current;
       materialRef.current.uVelocity = velocity.current;
-      materialRef.current.uResolution = new THREE.Vector2(size.width, size.height);
+      materialRef.current.uResolution = new THREE.Vector2(
+        size.width,
+        size.height,
+      );
       materialRef.current.uHasTexture = false;
-      
+
       materialRef.current.uHoverState = velocity.current > 0.1 ? 1.0 : 0.0;
     }
   });
@@ -70,9 +82,9 @@ export function DistortionCanvas() {
 
   return (
     <div className="pointer-events-none fixed inset-0 z-[-1] overflow-hidden mix-blend-screen opacity-45">
-      <Canvas 
-        camera={{ position: [0, 0, 1] }} 
-        dpr={[1, 2]} 
+      <Canvas
+        camera={{ position: [0, 0, 1] }}
+        dpr={[1, 2]}
         gl={{ antialias: false, alpha: true }}
       >
         <Scene />

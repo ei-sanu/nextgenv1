@@ -1,0 +1,51 @@
+version: '3.8'
+
+services:
+  backend:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    container_name: sentinel_backend
+    restart: always
+    ports:
+      - "5001:5001"
+    environment:
+      - NODE_ENV=production
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - MONGO_URI=${MONGO_URI}
+      - JWT_SECRET=${JWT_SECRET}
+      - FRONTEND_URL=${FRONTEND_URL}
+      - SCAN_WORKER_CONCURRENCY=10
+    depends_on:
+      - redis
+    networks:
+      - sentinel_network
+    deploy:
+      resources:
+        limits:
+          cpus: '3.0'
+          memory: 4G
+
+  redis:
+    image: redis:7-alpine
+    container_name: sentinel_redis
+    restart: always
+    ports:
+      - "6379:6379"
+    command: redis-server --appendonly yes
+    volumes:
+      - redis_data:/data
+    networks:
+      - sentinel_network
+    deploy:
+      resources:
+        limits:
+          memory: 2G
+
+networks:
+  sentinel_network:
+    driver: bridge
+
+volumes:
+  redis_data:
