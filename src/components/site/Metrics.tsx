@@ -6,7 +6,7 @@ const metrics = [
   { v: "<40ms", l: "Median scan event latency" },
   { v: "190+", l: "Countries under continuous watch" },
 ];
-
+//metrics 
 export function Metrics() {
   return (
     <section className="relative px-6 py-24">
