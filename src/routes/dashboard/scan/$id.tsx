@@ -10,6 +10,7 @@ import {
   Target,
 } from "lucide-react";
 import { Link } from "@tanstack/react-router";
+import { getApiUrl } from "@/lib/api";
 
 export const Route = createFileRoute("/dashboard/scan/$id")({
   component: ScanDetail,
@@ -25,8 +26,8 @@ function ScanDetail() {
     async function fetchData() {
       try {
         const [scanRes, vulnsRes] = await Promise.all([
-          fetch(`http://localhost:5001/api/scans/${id}`),
-          fetch(`http://localhost:5001/api/scans/${id}/vulnerabilities`),
+          fetch(getApiUrl(`/scans/${id}`)),
+          fetch(getApiUrl(`/scans/${id}/vulnerabilities`)),
         ]);
         const scanData = await scanRes.json();
         const vulnsData = await vulnsRes.json();
@@ -43,7 +44,7 @@ function ScanDetail() {
 
   const handleExport = (format: "pdf" | "json") => {
     window.open(
-      `http://localhost:5001/api/reports/${id}/export?format=${format}`,
+      getApiUrl(`/reports/${id}/export?format=${format}`),
       "_blank",
     );
   };

@@ -1,5 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
+import { getApiUrl } from "@/lib/api";
 import {
   ShieldCheck,
   Activity,
@@ -24,8 +25,8 @@ function Dashboard() {
     async function fetchData() {
       try {
         const [anaRes, scansRes] = await Promise.all([
-          fetch("http://localhost:5001/api/analytics"),
-          fetch("http://localhost:5001/api/scans"),
+          fetch(getApiUrl("/analytics")),
+          fetch(getApiUrl("/scans")),
         ]);
         const anaData = await anaRes.json();
         const scansData = await scansRes.json();

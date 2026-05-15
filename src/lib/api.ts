@@ -1,7 +1,7 @@
 import axios from "axios";
 
 // Helper to determine the backend base URL
-const getBaseURL = () => {
+export const getApiBaseURL = () => {
   // Use environment variable if provided (best for Cloudflare/Vercel)
   const envURL = import.meta.env.VITE_API_BASE_URL;
   if (envURL) return envURL;
@@ -9,17 +9,25 @@ const getBaseURL = () => {
   if (typeof window === "undefined") return "/api";
 
   const { hostname } = window.location;
-  // If we're on localhost, hit the backend directly (port 5001) to bypass proxy flakiness
+  // If we're on localhost, hit the backend directly (port 5001)
   if (hostname === "localhost" || hostname === "127.0.0.1") {
     return "http://127.0.0.1:5001/api";
   }
 
-  // Production Fallback: Use the Oracle VM IP directly
-  return "http://68.233.105.46:5001/api";
+  // Production: Use the DuckDNS domain. 
+  // NOTE: If your backend has SSL (recommended), use https.
+  // Cloudflare Pages (HTTPS) will block http requests to the backend.
+  return "https://nextgen-api.duckdns.org/api";
+};
+
+export const getApiUrl = (path: string) => {
+  const base = getApiBaseURL().replace(/\/+$/, "");
+  const normalizedPath = path.startsWith("/") ? path : `/${path}`;
+  return `${base}${normalizedPath}`;
 };
 
 const api = axios.create({
-  baseURL: getBaseURL(),
+  baseURL: getApiBaseURL(),
   withCredentials: true, // Required for secure cookies
 });
 
@@ -56,7 +64,7 @@ api.interceptors.response.use(
 
       try {
         const res = await axios.post(
-          `${getBaseURL()}/auth/refresh-token`,
+          `${getApiBaseURL()}/auth/refresh-token`,
           {},
           { withCredentials: true },
         );

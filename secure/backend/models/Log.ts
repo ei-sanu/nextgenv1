@@ -8,10 +8,10 @@ export interface ILog extends Document {
 }
 
 const LogSchema: Schema = new Schema({
-  level: { type: String, required: true },
+  level: { type: String, required: true, index: true },
   message: { type: String, required: true },
   meta: { type: Schema.Types.Mixed },
-  timestamp: { type: Date, default: Date.now },
+  timestamp: { type: Date, default: Date.now, index: { expires: "30d" } },
 });
 
 export default mongoose.model<ILog>("Log", LogSchema);

@@ -12,7 +12,7 @@ import rateLimit from "express-rate-limit";
 import mongoSanitize from "express-mongo-sanitize";
 // @ts-ignore
 import xss from "xss-clean";
-import { connectDB } from "./configs/database";
+import { connectDB, closeDB } from "./configs/database";
 import { setupSocketIO } from "../sockets";
 import authRoutes from "./routes/authRoutes";
 import scanRoutes from "./routes/scanRoutes";
@@ -26,7 +26,35 @@ const server = http.createServer(app);
 
 // Security Middleware
 app.use(helmet());
-app.use(cors({ origin: true, credentials: true }));
+const allowedOrigins = [
+  process.env.FRONTEND_URL,
+  "https://nextgenova.cyberarcnova.workers.dev",
+  ...(process.env.CORS_ORIGINS || "").split(",").map(o => o.trim())
+].filter(Boolean);
+
+app.use(
+  cors({
+    origin: (origin, callback) => {
+      // Allow requests with no origin (like mobile apps)
+      if (!origin) return callback(null, true);
+
+      // Allow if origin is in the allowed list or in development
+      if (
+        allowedOrigins.includes(origin) || 
+        origin.includes("localhost") || 
+        origin.includes("127.0.0.1") ||
+        process.env.NODE_ENV === "development"
+      ) {
+        return callback(null, true);
+      }
+
+      console.warn(`CORS blocked for origin: ${origin}`);
+      return callback(new Error("CORS blocked for origin"));
+    },
+    credentials: true,
+  })
+);
+app.set("trust proxy", 1);
 app.use(cookieParser());
 app.use(express.json({ limit: "10kb" }));
 app.use(morgan("dev"));
@@ -74,7 +102,7 @@ app.use((err: any, req: Request, res: Response, next: NextFunction) => {
 });
 
 const PORT = process.env.PORT || 5001;
-const HOST = "127.0.0.1";
+const HOST = process.env.HOST || "0.0.0.0";
 
 const startServer = async () => {
   // Initialize Socket.io
@@ -92,5 +120,24 @@ const startServer = async () => {
     process.exit(1);
   }
 };
+
+// Handle graceful shutdown
+const gracefulShutdown = async () => {
+  logger.info("[Server] Graceful shutdown initiated...");
+  server.close(async () => {
+    logger.info("[Server] HTTP server closed");
+    await closeDB();
+    process.exit(0);
+  });
+
+  // Force shutdown after 10s
+  setTimeout(() => {
+    logger.error("[Server] Could not close connections in time, forcefully shutting down");
+    process.exit(1);
+  }, 10000);
+};
+
+process.on("SIGTERM", gracefulShutdown);
+process.on("SIGINT", gracefulShutdown);
 
 startServer();

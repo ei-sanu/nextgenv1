@@ -58,7 +58,7 @@ export const startScan = async (req: Request, res: Response) => {
 
 export const getScans = async (req: Request, res: Response) => {
   try {
-    const scans = await Scan.find().sort({ startedAt: -1 }).limit(100);
+    const scans = await Scan.find().sort({ startedAt: -1 }).limit(100).lean();
     return res.status(200).json({ success: true, data: scans });
   } catch (err: any) {
     return res.status(500).json({ success: false, message: err.message });
@@ -67,7 +67,7 @@ export const getScans = async (req: Request, res: Response) => {
 
 export const getScanById = async (req: Request, res: Response) => {
   try {
-    const scan = await Scan.findById(req.params.id);
+    const scan = await Scan.findById(req.params.id).lean();
     if (!scan)
       return res
         .status(404)
@@ -80,7 +80,7 @@ export const getScanById = async (req: Request, res: Response) => {
 
 export const getVulnerabilities = async (req: Request, res: Response) => {
   try {
-    const vulns = await Vulnerability.find({ scanId: req.params.id });
+    const vulns = await Vulnerability.find({ scanId: req.params.id }).lean();
     return res.status(200).json({ success: true, data: vulns });
   } catch (err: unknown) {
     const message = err instanceof Error ? err.message : String(err);
@@ -92,7 +92,8 @@ export const getScanLogs = async (req: Request, res: Response) => {
   try {
     const logs = await Log.find({ "meta.scanId": req.params.id })
       .sort({ timestamp: 1 })
-      .limit(1000);
+      .limit(1000)
+      .lean();
     return res.status(200).json({ success: true, data: logs });
   } catch (err: unknown) {
     const message = err instanceof Error ? err.message : String(err);

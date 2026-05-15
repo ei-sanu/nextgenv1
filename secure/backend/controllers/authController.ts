@@ -36,10 +36,11 @@ const generateRefreshToken = async (user: any, ipAddress: string) => {
 };
 
 const setTokenCookie = (res: Response, token: string) => {
+  const isProduction = process.env.NODE_ENV === "production";
   res.cookie("refreshToken", token, {
     httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "strict",
+    secure: isProduction,
+    sameSite: isProduction ? "none" : "lax",
     expires: new Date(Date.now() + 10 * 60 * 60 * 1000),
     path: "/",
   });
@@ -127,7 +128,7 @@ const sendOTPEmail = async (
 export const signup = async (req: Request, res: Response) => {
   try {
     const { username, email, password } = req.body;
-    const existingUser = await User.findOne({ $or: [{ email }, { username }] });
+    const existingUser = await User.findOne({ $or: [{ email }, { username }] }).lean();
 
     if (existingUser && existingUser.isVerified) {
       return res

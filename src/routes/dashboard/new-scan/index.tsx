@@ -8,14 +8,11 @@ import {
   Loader2,
   ShieldAlert,
 } from "lucide-react";
+import { getApiUrl } from "@/lib/api";
 
 export const Route = createFileRoute("/dashboard/new-scan/")({
   component: NewScan,
 });
-
-const API_BASE_URL =
-  (import.meta.env.VITE_API_BASE_URL as string | undefined) ||
-  "http://localhost:5001";
 
 function NewScan() {
   const [target, setTarget] = useState("");
@@ -52,7 +49,7 @@ function NewScan() {
     setScanProgress(5);
 
     try {
-      const res = await fetch(`${API_BASE_URL}/api/scans/start`, {
+      const res = await fetch(getApiUrl("/scans/start"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -74,7 +71,7 @@ function NewScan() {
       const message = (err as any)?.message || "Network error";
       if (message.includes("Failed to fetch")) {
         setErrorMessage(
-          `Backend is unreachable at ${API_BASE_URL}. Start the API server and verify port 5001.`,
+          "Backend is unreachable. Verify your VITE_API_BASE_URL and backend server status.",
         );
       } else {
         setErrorMessage(message);
@@ -91,9 +88,9 @@ function NewScan() {
     const poll = async () => {
       try {
         const [scanRes, vulnRes, logsRes] = await Promise.all([
-          fetch(`${API_BASE_URL}/api/scans/${activeScanId}`),
-          fetch(`${API_BASE_URL}/api/scans/${activeScanId}/vulnerabilities`),
-          fetch(`${API_BASE_URL}/api/scans/${activeScanId}/logs`),
+          fetch(getApiUrl(`/scans/${activeScanId}`)),
+          fetch(getApiUrl(`/scans/${activeScanId}/vulnerabilities`)),
+          fetch(getApiUrl(`/scans/${activeScanId}/logs`)),
         ]);
 
         const scanData = await scanRes.json();
