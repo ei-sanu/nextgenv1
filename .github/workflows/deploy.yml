@@ -1,4 +1,4 @@
-name: Deploy Backend to Oracle VM
+name: Deploy Backend to Production VM
 
 on:
   push:
@@ -14,12 +14,12 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      - name: Deploy to Oracle VM via SSH
+      - name: Deploy to Production VM via SSH
         uses: appleboy/ssh-action@v1.0.3
         with:
-          host: ${{ secrets.ORACLE_VM_IP }}
+          host: ${{ secrets.PRODUCTION_VM_IP }}
           username: ubuntu
-          key: ${{ secrets.ORACLE_VM_SSH_KEY }}
+          key: ${{ secrets.PRODUCTION_VM_SSH_KEY }}
           script: |
             cd ~/nextgen/secure
             git pull origin main

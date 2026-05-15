@@ -1,37 +1,32 @@
 # Sentinel Security Backend Deployment Guide
 
-This guide covers deploying the Sentinel Security Backend to an Oracle Cloud Free Tier ARM VM (4 OCPUs, 24GB RAM). It includes PM2 clustering, Nginx reverse proxy, WebSockets optimization, and automated CI/CD.
+This guide covers deploying the Sentinel Security Backend to a generic Ubuntu 22.04 VPS. It includes PM2 clustering, Nginx reverse proxy, WebSockets optimization, and automated CI/CD.
 
-## 1. Initial Infrastructure Setup (Oracle Cloud)
+## 1. Initial Infrastructure Setup
 
-1. **Create an Oracle Cloud VM:**
-   - Sign up for Oracle Cloud Free Tier.
-   - Go to Compute -> Instances -> Create Instance.
-   - **Image:** Ubuntu 22.04.
-   - **Shape:** `VM.Standard.A1.Flex` (Ampere ARM).
-   - **Specs:** 4 OCPUs, 24GB RAM.
-   - **Networking:** Assign a Public IPv4 Address.
-   - **SSH Keys:** Save the generated private key.
+1. **Create a VPS Instance:**
+   - Choose a provider (DigitalOcean, AWS, Linode, etc.).
+   - **Image:** Ubuntu 22.04 LTS.
+   - **Recommended Specs:** 2+ CPUs, 4GB+ RAM.
+   - **Networking:** Ensure a Public IPv4 Address is assigned.
 
-2. **Configure Oracle VCN (Firewall):**
-   - Click your instance's Virtual Cloud Network (VCN).
-   - Go to Security Lists -> Default Security List.
-   - Add Ingress Rules:
-     - Source: `0.0.0.0/0`, Protocol: TCP, Destination Port: `80`
-     - Source: `0.0.0.0/0`, Protocol: TCP, Destination Port: `443`
-     - Source: `0.0.0.0/0`, Protocol: TCP, Destination Port: `5001` (Optional, if bypassing Nginx)
+2. **Configure Security Rules (Firewall):**
+   - Open the following ports in your cloud console:
+     - Source: `0.0.0.0/0`, Protocol: TCP, Destination Port: `80` (HTTP)
+     - Source: `0.0.0.0/0`, Protocol: TCP, Destination Port: `443` (HTTPS)
+     - Source: `0.0.0.0/0`, Protocol: TCP, Destination Port: `5001` (API)
 
 ## 2. Server Provisioning
 
-1. **SSH into the VM:**
+1. **SSH into the Server:**
    ```bash
-   ssh -i <your-private-key>.key ubuntu@<oracle-vm-ip>
+   ssh -i <your-private-key>.key ubuntu@<vps-ip>
    ```
 
 2. **Clone the Repository:**
    ```bash
-   git clone https://github.com/yourusername/nextgen.git
-   cd nextgen/secure
+   git clone https://github.com/ei-sanu/nextgenv1.git
+   cd nextgenv1/secure
    ```
 
 3. **Run Install Script:**

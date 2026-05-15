@@ -1,10 +1,10 @@
 #!/bin/bash
-# install.sh - Initial setup for Oracle Cloud Free Tier ARM VM (Ubuntu 22.04)
+# install.sh - Initial setup for Ubuntu 22.04 VPS
 # Run as root or with sudo
 
 set -e
 
-echo "Starting Oracle Cloud ARM64 Production Setup for Sentinel Security..."
+echo "Starting Production Setup for Sentinel Security..."
 
 # Update system
 apt update && apt upgrade -y
@@ -46,7 +46,7 @@ ufw allow 'Nginx Full'
 ufw allow 5001/tcp
 ufw --force enable
 
-# Iptables rules for Oracle Cloud (Oracle uses iptables heavily by default, UFW sometimes conflicts or needs this)
+# Iptables rules for cloud providers
 iptables -I INPUT 6 -m state --state NEW -p tcp --dport 80 -j ACCEPT
 iptables -I INPUT 6 -m state --state NEW -p tcp --dport 443 -j ACCEPT
 iptables -I INPUT 6 -m state --state NEW -p tcp --dport 5001 -j ACCEPT
